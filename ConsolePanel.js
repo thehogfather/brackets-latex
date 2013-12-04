@@ -16,13 +16,6 @@ define(function (require, exports, module) {
         $("pre#console", consolePanel.$panel).html("");
     }
     
-    function appendMessage(msg) {
-        showConsolePanel();
-        $("pre#console", consolePanel.$panel).append(msg);
-        var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
-        $("pre#console", consolePanel.$panel).scrollTop(scrollHeight);
-    }
-    
     function hideConsolePanel() {
         if (consolePanel) { consolePanel.setVisible(false); }
     }
@@ -37,6 +30,16 @@ define(function (require, exports, module) {
         }
         consolePanel.setVisible(true);
     }
+    
+    function appendMessage(msg) {
+        showConsolePanel();
+        $("pre#console", consolePanel.$panel).append(msg);
+        var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
+        $("pre#console", consolePanel.$panel).scrollTop(scrollHeight);
+    }
+    
+    
+   
     
     function toggle() {
         if (!consolePanel || !consolePanel.isVisible()) {

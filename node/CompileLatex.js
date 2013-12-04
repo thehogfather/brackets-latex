@@ -33,7 +33,6 @@
         
         fs.stat(dir, function (err, stats) {
             if (err && err.code === "ENOENT") { fs.mkdirSync(dir); }
-            }
             var command = prog + " -halt-on-error -file-line-error " + draftMode + outputDirectory + " " + fileName,
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
             
