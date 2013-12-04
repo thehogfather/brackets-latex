@@ -4,7 +4,7 @@
  * @date 12/2/13 21:44:03 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window, Mustache */
+/*global define, d3, require, $, brackets, window, Mustache, setTimeout */
 define(function (require, exports, module) {
     "use strict";
     var PanelManager                    = brackets.getModule("view/PanelManager"),
@@ -35,7 +35,7 @@ define(function (require, exports, module) {
         showConsolePanel();
         $("pre#console", consolePanel.$panel).append(msg);
         var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
-        $("pre#console", consolePanel.$panel).scrollTop(scrollHeight);
+        $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
     }
     
     
