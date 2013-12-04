@@ -1,0 +1,29 @@
+<div id="latex-settings-dialog" class="modal">
+    <div class="modal-header">
+        <h1 class="dialog-title">{{TEX_SETTINGS}}</h1>
+    </div>
+    <div class="modal-body no-padding table-striped tab-content">
+        <label for="settings-texbin-directory">{{TEX_BIN_DIRECTORY}}:</label>
+        <input type="text" id="settings-texbin-directory"/>
+        <br/>
+        <label for="settings-output-directory">{{OUTPUT_DIRECTORY}}:</label>
+        <input type="text" id="settings-output-directory"/>
+        <br/>
+        <label for="settings-output-format">{{OUTPUT_FORMAT}}:</label>
+        <select id="settings-output-format">
+            <option id="option-pdf">pdf</option>
+            <option id="option-dvi">dvi</option>
+            <option id="option-ps">ps</option>
+        </select>
+        <br/>
+        <label for="settings-draftmode">
+            <input type="checkbox" id="settings-draftmode"/>
+            {{DRAFT_MODE}}
+        </label>
+    </div>
+    <div class="modal-footer">
+        <button data-button-id="ok" class="dialog-button btn primary left">{{BUTTON_SAVE}}</button>
+        <button data-button-id="defaults" class="dialog-button btn left">{{BUTTON_DEFAULTS}}</button>
+        <button data-button-id="cancel" class="dialog-button btn cancel">{{BUTTON_CANCEL}}</button>
+    </div>
+</div>

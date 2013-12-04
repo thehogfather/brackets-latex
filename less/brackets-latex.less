@@ -1,0 +1,49 @@
+@lightGrey:   #BBBBBB;
+@darkGrey:    #9c9e9e;
+@almostWhite: #f5f5f5;
+@green:       #3B9102;
+@red:         #F74687;
+@lightBlue:   #78B2F2;
+@darkBlue:    #1976DD;
+@orange:      #DB8D03;
+@lightRed:    #FF7CAD;
+
+
+//#latex-console {
+//    pre#console {
+//        height: 100%;   
+//    }
+//}
+
+#latex-settings-dialog {
+    input[type=text]{
+        .sane-box-model;
+        width: 100%;
+        height: 2em;
+    }
+}
+
+#latex-toolbar-icon {
+    background: url("tex-logo.svg") no-repeat 0 0;
+    &.error {
+        background: url("tex-logo.svg") no-repeat -24px 0;
+    }
+    &.on {
+        background: url("tex-logo.svg") no-repeat -48px 0;   
+    }
+    
+    &.disabled {
+        background: url("tex-logo.svg") no-repeat 0 0;   
+    }
+}
+/*
+    these mixins were copied out from the Brackets,
+    because there's no way to import them right now
+*/
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing
+.sane-box-model {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
