@@ -1,6 +1,6 @@
 {
     "name": "brackets-latex",
-    "version": "0.1",
+    "version": "0.1.0",
     "description": "Brackets extension that provides support for writing and compiling latex documents",
     "keywords": ["latex", "tex"],
     "categories": ["editing", "typesetting"],
