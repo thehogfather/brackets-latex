@@ -43,18 +43,15 @@ define(function (require, exports, module) {
         
         var compileMessage = "Please wait ... Compiling " + options.fileName;
         ConsolePanel.appendMessage(compileMessage);
-        ConsolePanel.show();
         
         nodeCon.domains[domainId].compile(options)
             .done(function (res) {
                 latexIcon.addClass("on").removeClass("error");
                 console.log(res);
-                ConsolePanel.show();
                 ConsolePanel.appendMessage(res.stdout.toString());
             }).fail(function (err) {
                 latexIcon.addClass("error").removeClass("on");
                 console.log(err);
-                ConsolePanel.show();
                 ConsolePanel.appendMessage(err.stdout.toString());
             });
     }

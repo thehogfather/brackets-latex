@@ -17,6 +17,7 @@ define(function (require, exports, module) {
     }
     
     function appendMessage(msg) {
+        showConsolePanel();
         $("pre#console", consolePanel.$panel).append(msg);
         var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
         $("pre#console", consolePanel.$panel).scrollTop(scrollHeight);
