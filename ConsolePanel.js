@@ -37,10 +37,7 @@ define(function (require, exports, module) {
         var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
         $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
     }
-    
-    
-   
-    
+        
     function toggle() {
         if (!consolePanel || !consolePanel.isVisible()) {
             showConsolePanel();
@@ -49,8 +46,21 @@ define(function (require, exports, module) {
         }
     }
     
-    exports.show = showConsolePanel;
-    exports.hide = hideConsolePanel;
-    exports.appendMessage = appendMessage;
-    exports.toggle  = toggle;
+    exports.show = function () {
+        showConsolePanel();
+        return this;
+    };
+    exports.hide = function () {
+        hideConsolePanel();
+        return this;
+    };
+    
+    exports.appendMessage = function (msg) {
+        appendMessage(msg);
+        return this;
+    };
+    exports.toggle  = function () {
+        toggle();
+        return this;
+    };
 });
