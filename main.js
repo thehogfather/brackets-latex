@@ -52,7 +52,8 @@ define(function (require, exports, module) {
             }).fail(function (err) {
                 latexIcon.addClass("error").removeClass("on");
                 console.log(err);
-                ConsolePanel.appendMessage(err.stdout.toString());
+                ConsolePanel.appendMessage(JSON.stringify(err.err))
+                    .appendMessage(err.stdout.toString());
             });
     }
     
