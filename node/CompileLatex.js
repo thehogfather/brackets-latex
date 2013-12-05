@@ -10,26 +10,23 @@
     var cp = require("child_process"),
         exec = cp.exec,
         spawn = cp.spawn,
-        fs = require("fs");
+        fs = require("fs"),
+        path = require("path");
     var domainId = "brackets.latex";
     
     var execNames = {pdf: "pdflatex", ps: "pslatex", dvi: "latex"};
     var osOpenCommand = {win: "start ", mac: "open ", linux: "xdg-open "};
     
-    function endWithSlash(dir) {
-        if (dir.substr(-1) !== "/") { return dir.concat("/"); }
-        return dir;
-    }
-    
     function compileFile(options, cb) {
         //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
+        var dir = path.join(options.projectRoot, options.outputDirectory);
         var projectFolder = options.projectRoot,
             fileName = options.fileName,
-            prog = options.texBinDirectory + "/" + execNames[options.outputFormat],
+            prog = path.join(options.texBinDirectory, execNames[options.outputFormat]),
             draftMode = options.draftMode ? "-draftmode " : "",
-            outputDirectory = " -output-directory=" + endWithSlash(options.projectRoot) + options.outputDirectory;
-        var dir = endWithSlash(options.projectRoot) + options.outputDirectory;
+            outputDirectory = " -output-directory=" + dir;
+        
         
         fs.stat(dir, function (err, stats) {
             if (err && err.code === "ENOENT") { fs.mkdirSync(dir); }
@@ -42,8 +39,9 @@
                 } else {
                     cb(null, {stdout: stdout.toString(), stderr: stderr.toString()});
                     //try to open the generated file
-                    exec(osOpenCommand[options.platform] +
-                         " " + dir + "/" + fileName.substring(0, fileName.lastIndexOf(".")) + "." + options.outputFormat);
+                    var compiledFile = path.join(dir, fileName.substring(0, fileName.lastIndexOf("."))
+                                                 + "." + options.outputFormat);
+                    exec(osOpenCommand[options.platform] + " " + compiledFile);
                 }
             });
         });
