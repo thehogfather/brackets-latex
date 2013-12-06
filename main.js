@@ -26,6 +26,7 @@ define(function (require, exports, module) {
         latexIcon,
         domainId = "brackets.latex",
         COMPILE_LATEX = "latex.compile",
+        COMPILE_BIBTEX = "bibtex.compile",
         LATEX_SETTINGS = "brackets-latex.settings";
     
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
@@ -41,7 +42,7 @@ define(function (require, exports, module) {
         options.projectRoot = ProjectManager.getProjectRoot().fullPath;
         options.fileName = editor.document.file.name;
         
-        var compileMessage = "Please wait ... Compiling " + options.fileName;
+        var compileMessage = "Please wait ... Compiling latex " + options.fileName;
         ConsolePanel.appendMessage(compileMessage);
         
         nodeCon.domains[domainId].compile(options)
@@ -52,8 +53,31 @@ define(function (require, exports, module) {
             }).fail(function (err) {
                 latexIcon.addClass("error").removeClass("on");
                 console.log(err);
-                ConsolePanel.appendMessage(JSON.stringify(err.err))
-                    .appendMessage(err.stdout.toString());
+                ConsolePanel.appendMessage("\n")
+                    .appendMessage(JSON.stringify(err));
+            });
+    }
+    
+    function bibtex() {
+        var editor = EditorManager.getCurrentFullEditor();
+    
+        var options = preferences.getAllValues();
+        options.projectRoot = ProjectManager.getProjectRoot().fullPath;
+        options.fileName = editor.document.file.name;
+        
+        var compileMessage = "Please wait ... Compiling bibtex " + options.fileName;
+        ConsolePanel.appendMessage(compileMessage);
+        
+        nodeCon.domains[domainId].bibtex(options)
+            .done(function (res) {
+                latexIcon.addClass("on").removeClass("error");
+                console.log(res);
+                ConsolePanel.appendMessage(res.stdout.toString());
+            }).fail(function (err) {
+                latexIcon.addClass("error").removeClass("on");
+                console.log(err);
+                ConsolePanel.appendMessage("\n")
+                    .appendMessage(JSON.stringify(err));
             });
     }
     
@@ -98,8 +122,10 @@ define(function (require, exports, module) {
             .fail(errorFunc);
         
         CommandManager.register("Compile Latex", COMPILE_LATEX, compile);
+        CommandManager.register("Compile Bibtex", COMPILE_BIBTEX, bibtex);
         CommandManager.register("Latex Settings ...", LATEX_SETTINGS, showSettingsDialog);
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_LATEX);
+        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_BIBTEX);
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
     }
     
