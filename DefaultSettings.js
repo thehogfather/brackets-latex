@@ -13,7 +13,6 @@ define(function (require, exports, module) {
         outputDirectory : "out",//path relative to source latex directory
         draftMode       : false,
         outputFormat    : "pdf", //can be dvi or ps
-        outputViewer    : brackets.platform === "win" ? "" : undefined,
         platform        : brackets.platform
     };
 });

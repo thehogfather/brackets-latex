@@ -43,8 +43,8 @@
                     //try to open the generated file
                     var compiledFile = path.join(dir, path.basename(fileName, path.extname(fileName))
                                                  + "." + options.outputFormat);
-                    var outputViewer = options.platform === "win" ? quote(options.outputViewer).concat(" ") : "";
-                    exec(osOpenCommand[options.platform] + " " + outputViewer + quote(compiledFile));
+                    var args = options.platform === "win" ? quote(" ").concat(" ") : "";
+                    exec(osOpenCommand[options.platform] + " " + args + quote(compiledFile));
                 }
             });
         });

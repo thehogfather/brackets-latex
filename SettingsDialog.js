@@ -17,9 +17,6 @@ define(function (require, exports, module) {
         $("#settings-output-directory").val(prefs.outputDirectory);
         $("#settings-draftmode").prop("checked", prefs.draftMode);
         $("#settings-output-format #option-" + prefs.outputFormat).prop("selected", true);
-        if (prefs.outputViewer !== undefined) {
-            $("#settings-output-viewer").val(prefs.outputViewer);
-        }
     }
     
     
@@ -37,10 +34,6 @@ define(function (require, exports, module) {
     function showDialog(prefs) {
         var template = Mustache.render(settingsDialogTemplate, Strings);
         var dialog = Dialogs.showModalDialogUsingTemplate(template);
-        
-        if (brackets.platform === "win") {
-            $("#windows-settings", dialog.getElement()).addClass("hide-setting");
-        }
         setFormValues(prefs.getAllValues());
         
         dialog.done(function (buttonId) {
@@ -50,7 +43,6 @@ define(function (require, exports, module) {
                 prefs.setValue("outputDirectory", $("#settings-output-directory", $dialog).val());
                 prefs.setValue("draftMode", $("#settings-draftmode", $dialog).prop("checked"));
                 prefs.setValue("outputFormat", $("#settings-output-format", $dialog).val());
-                prefs.setValue("outputViewer", $("#settings-output-viewer", $dialog).val());
             }
         });
     }
