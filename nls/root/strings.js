@@ -8,7 +8,7 @@
 define(function (require, exports, module) {
     "use strict";
     module.exports = {
-        "TEX_SETTINGS": "Tex Settings",
+        "TEX_SETTINGS": "LaTex Settings",
         "TEX_BIN_DIRECTORY": "Tex distribution bin directory",
         "OUTPUT_DIRECTORY": "Output directory for compiled files and logs",
         "DRAFT_MODE": "Draft mode",
