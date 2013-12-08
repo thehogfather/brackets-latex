@@ -102,7 +102,7 @@ define(function (require, exports, module) {
             if (current) {
                 var path = current.document.file.fullPath;
                 var ext = path.split(".").slice(-1).join("");
-                if (ext === "tex") {
+                if (ext === "tex" || ext === "bib") {
                     var cm = current._codeMirror;
                     var mode = cm.getMode({tabSize: 4}, "stex");
                     cm.setOption("mode", mode);
