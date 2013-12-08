@@ -130,6 +130,8 @@ define(function (require, exports, module) {
     }
     
     exports.compile = compile;
+    exports.bibtex = bibtex;
+    exports.showSettings = showSettingsDialog;
     
     AppInit.appReady(init);
 });

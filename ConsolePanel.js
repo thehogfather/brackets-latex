@@ -17,9 +17,11 @@ define(function (require, exports, module) {
         $("pre#console", consolePanel.$panel).html("");
     }
     
-    function compile() {
-        Main.compile();
-    }
+    function compile() { Main.compile(); }
+    
+    function bibtex() { Main.bibtex(); }
+    
+    function showSettings() { Main.showSettings(); }
     
     function hideConsolePanel() {
         if (consolePanel) { consolePanel.setVisible(false); }
@@ -32,6 +34,8 @@ define(function (require, exports, module) {
             consolePanel.$panel
                 .on("click", ".close", hideConsolePanel)
                 .on("click", "button.compile", compile)
+                .on("click", "button.bibtex", bibtex)
+                .on("click", "button.tex-settings", showSettings)
                 .on("click", "button.clear-console", clearConsole);
         }
         consolePanel.setVisible(true);
@@ -65,6 +69,7 @@ define(function (require, exports, module) {
         appendMessage(msg);
         return this;
     };
+    
     exports.toggle  = function () {
         toggle();
         return this;

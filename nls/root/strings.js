@@ -18,6 +18,7 @@ define(function (require, exports, module) {
         "BUTTON_DEFAULTS": "Restore defaults",
         "BUTTON_CANCEL": "Cancel",
         "BUTTON_CLEAR_CONSOLE" : "Clear Console",
-        "BUTTON_COMPILE" : "Compile"
+        "BUTTON_COMPILE" : "Compile",
+        "BUTTON_BIBTEX": "Bibtex"
     };
 });
