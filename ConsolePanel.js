@@ -9,11 +9,16 @@ define(function (require, exports, module) {
     "use strict";
     var PanelManager                    = brackets.getModule("view/PanelManager"),
         panelTemplate                   = require("text!htmlTemplates/latex-console.html"),
-        Strings                         = require("i18n!nls/strings");
+        Strings                         = require("i18n!nls/strings"),
+        Main                            = require("main");
     var consolePanel;
     
     function clearConsole() {
         $("pre#console", consolePanel.$panel).html("");
+    }
+    
+    function compile() {
+        Main.compile();
     }
     
     function hideConsolePanel() {
@@ -26,6 +31,7 @@ define(function (require, exports, module) {
             consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
             consolePanel.$panel
                 .on("click", ".close", hideConsolePanel)
+                .on("click", "button.compile", compile)
                 .on("click", "button.clear-console", clearConsole);
         }
         consolePanel.setVisible(true);

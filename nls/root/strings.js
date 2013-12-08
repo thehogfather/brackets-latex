@@ -17,6 +17,7 @@ define(function (require, exports, module) {
         "BUTTON_SAVE": "Save",
         "BUTTON_DEFAULTS": "Restore defaults",
         "BUTTON_CANCEL": "Cancel",
-        "BUTTON_CLEAR_CONSOLE" : "Clear Console"
+        "BUTTON_CLEAR_CONSOLE" : "Clear Console",
+        "BUTTON_COMPILE" : "Compile"
     };
 });
