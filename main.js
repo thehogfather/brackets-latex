@@ -129,5 +129,7 @@ define(function (require, exports, module) {
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
     }
     
+    exports.compile = compile;
+    
     AppInit.appReady(init);
 });
