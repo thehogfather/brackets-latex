@@ -74,4 +74,9 @@ define(function (require, exports, module) {
         toggle();
         return this;
     };
+    
+    exports.clear = function () {
+        clearConsole();
+        return this;
+    };
 });

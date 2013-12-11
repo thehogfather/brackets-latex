@@ -43,7 +43,8 @@ define(function (require, exports, module) {
         options.fileName = editor.document.file.name;
         
         var compileMessage = "Please wait ... Compiling latex " + options.fileName;
-        ConsolePanel.appendMessage(compileMessage);
+        ConsolePanel.clear()
+            .appendMessage(compileMessage);
         
         nodeCon.domains[domainId].compile(options)
             .done(function (res) {
@@ -54,7 +55,7 @@ define(function (require, exports, module) {
                 latexIcon.addClass("error").removeClass("on");
                 console.log(err);
                 ConsolePanel.appendMessage("\n")
-                    .appendMessage(JSON.stringify(err));
+                    .appendMessage(err.stdout.toString());
             });
     }
     
@@ -95,7 +96,8 @@ define(function (require, exports, module) {
             name: "Latex",
             mode: "stex",
             fileExtensions: ["tex", "bib"],
-            lineComment: ["%"]
+            lineComment: ["%"],
+            blockComment: ["%"]
         });
         
         $(EditorManager).on("activeEditorChange", function (event, current, previous) {
