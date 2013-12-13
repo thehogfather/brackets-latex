@@ -14,7 +14,7 @@
         path = require("path");
     var domainId = "brackets.latex", quotes = '"';
     
-    var execNames = {pdf: "pdflatex", ps: "pslatex", dvi: "latex"};
+    var execNames = {pdf: "pdflatex", ps: "pslatex", dvi: "latex", xetex: "xetex"};
     var osOpenCommand = {win: "start ", mac: "open ", linux: "xdg-open "};
     
     function quote(str) { return '"' + str + '"'; }

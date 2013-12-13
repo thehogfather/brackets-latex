@@ -17,6 +17,7 @@ define(function (require, exports, module) {
         LanguageManager     = brackets.getModule("language/LanguageManager"),
         NodeConnection      = brackets.getModule("utils/NodeConnection"),
         ExtensionUtils      = brackets.getModule("utils/ExtensionUtils"),
+        FileUtils           = brackets.getModule("file/FileUtils"),
         AppInit             = brackets.getModule("utils/AppInit"),
         SettingsDialog      = require("SettingsDialog"),
         ConsolePanel        = require("ConsolePanel"),
@@ -27,7 +28,8 @@ define(function (require, exports, module) {
         domainId = "brackets.latex",
         COMPILE_LATEX = "latex.compile",
         COMPILE_BIBTEX = "bibtex.compile",
-        LATEX_SETTINGS = "brackets-latex.settings";
+        LATEX_SETTINGS = "brackets-latex.settings",
+        texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"];
     
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
     
@@ -86,25 +88,33 @@ define(function (require, exports, module) {
         SettingsDialog.show(preferences);
     }
     
+    function activeFileIsTexRelated() {
+        var editor = EditorManager.getCurrentFullEditor();
+        if (editor) {
+            var ext = FileUtils.getFileExtension(editor.document.file.fullPath);
+            return texRelateFiledExtensions.indexOf(ext) > -1;
+        }
+    }
+    
     function init() {
         latexIcon = $("<a id='latex-toolbar-icon' href='#'></a>").appendTo($("#main-toolbar .buttons")).addClass("disabled");
         latexIcon.on("click", function () {
-            ConsolePanel.toggle();
+            //toggle panel if the document type is tex related
+            if (activeFileIsTexRelated()) {
+                ConsolePanel.toggle();
+            }
         });
         
         LanguageManager.defineLanguage("latex", {
             name: "Latex",
             mode: "stex",
-            fileExtensions: ["tex", "bib"],
-            lineComment: ["%"],
-            blockComment: ["%"]
+            fileExtensions: ["tex", "bib", "cls"],
+            lineComment: ["%"]
         });
         
         $(EditorManager).on("activeEditorChange", function (event, current, previous) {
             if (current) {
-                var path = current.document.file.fullPath;
-                var ext = path.split(".").slice(-1).join("");
-                if (ext === "tex" || ext === "bib") {
+                if (activeFileIsTexRelated()) {
                     var cm = current._codeMirror;
                     var mode = cm.getMode({tabSize: 4}, "stex");
                     cm.setOption("mode", mode);
