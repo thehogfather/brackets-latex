@@ -29,7 +29,8 @@ define(function (require, exports, module) {
         COMPILE_LATEX = "latex.compile",
         COMPILE_BIBTEX = "bibtex.compile",
         LATEX_SETTINGS = "brackets-latex.settings",
-        texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"];
+        texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"],
+        consoleStatus = {};
     
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
     
@@ -37,39 +38,17 @@ define(function (require, exports, module) {
         console.log("something bad happened");
     }
     
-    function compile() {
-        var editor = EditorManager.getCurrentFullEditor();
-    
-        var options = preferences.getAllValues();
-        options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-        options.fileName = editor.document.file.name;
+    function bibtex(options) {
+        if (!options) {
+            var editor = EditorManager.getCurrentFullEditor();
+            options = preferences.getAllValues();
+            options.projectRoot = ProjectManager.getProjectRoot().fullPath;
+            options.fileName = editor.document.file.fullPath;
+        }
         
-        var compileMessage = "Please wait ... Compiling latex " + options.fileName;
+        var compileMessage = "Please wait ... Compiling " + options.fileName + " using bibtex\n";
         ConsolePanel.clear()
             .appendMessage(compileMessage);
-        
-        nodeCon.domains[domainId].compile(options)
-            .done(function (res) {
-                latexIcon.addClass("on").removeClass("error");
-                console.log(res);
-                ConsolePanel.appendMessage(res.stdout.toString());
-            }).fail(function (err) {
-                latexIcon.addClass("error").removeClass("on");
-                console.log(err);
-                ConsolePanel.appendMessage("\n")
-                    .appendMessage(err.stdout.toString());
-            });
-    }
-    
-    function bibtex() {
-        var editor = EditorManager.getCurrentFullEditor();
-    
-        var options = preferences.getAllValues();
-        options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-        options.fileName = editor.document.file.name;
-        
-        var compileMessage = "Please wait ... Compiling bibtex " + options.fileName;
-        ConsolePanel.appendMessage(compileMessage);
         
         nodeCon.domains[domainId].bibtex(options)
             .done(function (res) {
@@ -82,6 +61,35 @@ define(function (require, exports, module) {
                 ConsolePanel.appendMessage("\n")
                     .appendMessage(JSON.stringify(err));
             });
+    }
+    
+    function compile() {
+        var editor = EditorManager.getCurrentFullEditor();
+    
+        var options = preferences.getAllValues();
+        options.projectRoot = ProjectManager.getProjectRoot().fullPath;
+        options.fileName = editor.document.file.fullPath;
+            
+        if (options.compiler === "bibtex") {
+            bibtex(options);
+        } else {
+            var compileMessage = "Please wait ... Compiling "
+                + options.fileName + " using " + options.compiler + "\n";
+            ConsolePanel.clear()
+                .appendMessage(compileMessage);
+            
+            nodeCon.domains[domainId].compile(options)
+                .done(function (res) {
+                    latexIcon.addClass("on").removeClass("error");
+                    console.log(res);
+                    ConsolePanel.appendMessage(res.stdout.toString());
+                }).fail(function (err) {
+                    latexIcon.addClass("error").removeClass("on");
+                    console.log(err);
+                    ConsolePanel.appendMessage("\n")
+                        .appendMessage(err.stdout.toString());
+                });
+        }
     }
     
     function showSettingsDialog() {
@@ -101,7 +109,7 @@ define(function (require, exports, module) {
         latexIcon.on("click", function () {
             //toggle panel if the document type is tex related
             if (activeFileIsTexRelated()) {
-                ConsolePanel.toggle();
+                ConsolePanel.toggle(preferences);
             }
         });
         
@@ -113,12 +121,20 @@ define(function (require, exports, module) {
         });
         
         $(EditorManager).on("activeEditorChange", function (event, current, previous) {
+            if (previous) {
+                consoleStatus[previous.document.file.fullPath] = ConsolePanel.isVisible();
+            }
             if (current) {
                 if (activeFileIsTexRelated()) {
                     var cm = current._codeMirror;
                     var mode = cm.getMode({tabSize: 4}, "stex");
                     cm.setOption("mode", mode);
                     latexIcon.addClass("on").removeClass("disabled");
+                    if (consoleStatus[current.document.file.fullPath] === false) {
+                        ConsolePanel.hide();
+                    } else {
+                        ConsolePanel.show(preferences);
+                    }
                 } else {
                     ConsolePanel.hide();
                     latexIcon.addClass("disabled").removeClass("on");
@@ -133,11 +149,11 @@ define(function (require, exports, module) {
             })
             .fail(errorFunc);
         
-        CommandManager.register("Compile Latex", COMPILE_LATEX, compile);
-        CommandManager.register("Compile Bibtex", COMPILE_BIBTEX, bibtex);
+//        CommandManager.register("Compile Latex", COMPILE_LATEX, compile);
+//        CommandManager.register("Compile Bibtex", COMPILE_BIBTEX, bibtex);
         CommandManager.register("Latex Settings ...", LATEX_SETTINGS, showSettingsDialog);
-        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_LATEX);
-        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_BIBTEX);
+//        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_LATEX);
+//        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_BIBTEX);
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
     }
     

@@ -1,9 +1,15 @@
-<div id="latex-console" class="bottom-panel vert-resizable top-resizer no-focus">
+<div id="latex-console" class="bottom-panel vert-resizable top-resizer">
     <div class="toolbar simple-toolbar-layout">
-        <button class="btn small clear-console">{{BUTTON_CLEAR_CONSOLE}}</button>
+        <select id="settings-compiler">
+            <option id="option-pdf">pdflatex</option>
+            <option id="option-dvi">latex</option>
+            <option id="option-xetex">xetex</option>
+            <option id="option-bibtex">bibtex</option>
+        </select>
         <button class="btn small compile">{{BUTTON_COMPILE}}</button>
         <button class="btn small bibtex">{{BUTTON_BIBTEX}}</button>
         <div class="right-buttons">
+            <button class="btn small clear-console">{{BUTTON_CLEAR_CONSOLE}}</button>
             <button class="btn small tex-settings">{{TEX_SETTINGS}}</button>
         </div>
         <a href="#" class="close">&times;</a>

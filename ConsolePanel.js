@@ -17,9 +17,13 @@ define(function (require, exports, module) {
         $("pre#console", consolePanel.$panel).html("");
     }
     
-    function compile() { Main.compile(); }
+    function compile() {
+        Main.compile();
+    }
     
-    function bibtex() { Main.bibtex(); }
+    function bibtex() {
+        Main.bibtex();
+    }
     
     function showSettings() { Main.showSettings(); }
     
@@ -27,16 +31,25 @@ define(function (require, exports, module) {
         if (consolePanel) { consolePanel.setVisible(false); }
     }
     
-    function showConsolePanel() {
+    function compilerChanged(preferences) {
+        return function () {
+            preferences.setValue("compiler", $("div#latex-console #settings-compiler").val());
+        };
+    }
+    
+    function showConsolePanel(preferences) {
         if (!consolePanel) {
             var panelHtml = Mustache.render(panelTemplate, Strings);
             consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
+            $("#settings-compiler #option-" + preferences.compiler).prop("selected", true);
+
             consolePanel.$panel
                 .on("click", ".close", hideConsolePanel)
                 .on("click", "button.compile", compile)
                 .on("click", "button.bibtex", bibtex)
                 .on("click", "button.tex-settings", showSettings)
-                .on("click", "button.clear-console", clearConsole);
+                .on("click", "button.clear-console", clearConsole)
+                .on("change", "select", compilerChanged(preferences));
         }
         consolePanel.setVisible(true);
     }
@@ -48,16 +61,16 @@ define(function (require, exports, module) {
         $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
     }
         
-    function toggle() {
+    function toggle(prefs) {
         if (!consolePanel || !consolePanel.isVisible()) {
-            showConsolePanel();
+            showConsolePanel(prefs);
         } else {
             hideConsolePanel();
         }
     }
     
-    exports.show = function () {
-        showConsolePanel();
+    exports.show = function (pref) {
+        showConsolePanel(pref);
         return this;
     };
     exports.hide = function () {
@@ -70,13 +83,16 @@ define(function (require, exports, module) {
         return this;
     };
     
-    exports.toggle  = function () {
-        toggle();
+    exports.toggle  = function (prefs) {
+        toggle(prefs);
         return this;
     };
     
     exports.clear = function () {
         clearConsole();
         return this;
+    };
+    exports.isVisible = function () {
+        return consolePanel && consolePanel.isVisible();
     };
 });

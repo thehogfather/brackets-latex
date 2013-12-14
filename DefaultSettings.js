@@ -11,8 +11,8 @@ define(function (require, exports, module) {
         texBinDirectory : brackets.platform === "win" ? "" : "/usr/texbin",
         timeout         : 60000,
         outputDirectory : "out",//path relative to source latex directory
-        draftMode       : false,
-        outputFormat    : "pdf", //can be dvi or ps
+//        draftMode       : false,
+        compiler    : "pdflatex", //can be latex or pslatex or xetex or bibtex
         platform        : brackets.platform
     };
 });

@@ -12,7 +12,7 @@ define(function (require, exports, module) {
         "TEX_BIN_DIRECTORY": "Tex distribution bin directory",
         "OUTPUT_DIRECTORY": "Output directory for compiled files and logs",
         "DRAFT_MODE": "Draft mode",
-        "OUTPUT_FORMAT": "Output format",
+        "COMPILER": "Compiler",
         "OUTPUT_VIEWER": "Output viewer",
         "BUTTON_SAVE": "Save",
         "BUTTON_DEFAULTS": "Restore defaults",

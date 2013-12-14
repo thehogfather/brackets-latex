@@ -9,18 +9,14 @@
         <label for="settings-output-directory">{{OUTPUT_DIRECTORY}}:</label>
         <input type="text" id="settings-output-directory"/>
         <br/>
-        <label for="settings-output-format">{{OUTPUT_FORMAT}}:</label>
-        <select id="settings-output-format">
-            <option id="option-pdf">pdf</option>
-            <option id="option-dvi">dvi</option>
-            <option id="option-ps">ps</option>
+        <label for="settings-compiler">{{COMPILER}}:</label>
+        <select id="settings-compiler">
+            <option id="option-pdflatex">pdflatex</option>
+            <option id="option-latex">latex</option>
             <option id="option-xetex">xetex</option>
+            <option id="option-bibtex">bibtex</option>
         </select>
         <br/>
-        <label for="settings-draftmode">
-            <input type="checkbox" id="settings-draftmode"/>
-            {{DRAFT_MODE}}
-        </label>
     </div>
     <div class="modal-footer">
         <button data-button-id="ok" class="dialog-button btn primary left">{{BUTTON_SAVE}}</button>
