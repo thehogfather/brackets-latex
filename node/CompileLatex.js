@@ -30,8 +30,7 @@
         
         fs.stat(dir, function (err, stats) {
             if (err && err.code === "ENOENT") { fs.mkdirSync(dir); }
-            var command = quote(prog) + " -halt-on-error -file-line-error "
-                + outputDirectory,
+            var command = quote(prog) + " -halt-on-error -file-line-error " + outputDirectory,
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
             
             if (options.compiler === "xetex" || options.compiler === "xelatex") { command = command + " -no-pdf"; }
@@ -41,8 +40,7 @@
                 } else {
                     //if using xetex then run xdvipdfmx on the generated file
                     if (options.compiler === "xetex" || options.compiler === "xelatex") {
-                        var xetexCommand = path.join(options.texBinDirectory, "xdvipdfmx") + " -o " + quote(path.join(dir, fileBaseName + ".pdf"))
-                                + " " + path.join(dir, fileBaseName);
+                        var xetexCommand = path.join(options.texBinDirectory, "xdvipdfmx") + " -o " + quote(path.join(dir, fileBaseName + ".pdf")) + " " + path.join(dir, fileBaseName);
                         exec(xetexCommand, execOptions, function (err, xestdout, xestderr) {
                             if (err) {
                                 cb({err: err, stdout: stdout.concat(xestdout),

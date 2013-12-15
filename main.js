@@ -73,8 +73,7 @@ define(function (require, exports, module) {
         if (options.compiler === "bibtex") {
             bibtex(options);
         } else {
-            var compileMessage = "Please wait ... Compiling "
-                + options.fileName + " using " + options.compiler + "\n";
+            var compileMessage = "Please wait ... Compiling " + options.fileName + " using " + options.compiler + "\n";
             ConsolePanel.clear()
                 .appendMessage(compileMessage);
             
