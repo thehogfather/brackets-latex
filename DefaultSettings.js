@@ -12,7 +12,7 @@ define(function (require, exports, module) {
         timeout         : 60000,
         outputDirectory : "out",//path relative to source latex directory
 //        draftMode       : false,
-        compiler    : "pdflatex", //can be latex or pslatex or xetex or bibtex
+        compiler    : "pdflatex", //can be latex or pslatex or xetex, xelatex or bibtex
         platform        : brackets.platform
     };
 });
