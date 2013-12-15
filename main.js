@@ -59,7 +59,7 @@ define(function (require, exports, module) {
                 latexIcon.addClass("error").removeClass("on");
                 console.log(err);
                 ConsolePanel.appendMessage("\n")
-                    .appendMessage(JSON.stringify(err));
+                    .appendMessage(err.stdout.toString());
             });
     }
     

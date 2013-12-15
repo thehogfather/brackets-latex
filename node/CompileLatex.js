@@ -33,13 +33,14 @@
             var command = quote(prog) + " -halt-on-error -file-line-error " + outputDirectory,
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
             
-            if (options.compiler === "xetex" || options.compiler === "xelatex") { command = command + " -no-pdf"; }
+            if (options.compiler === "xetex") { command = command + " -no-pdf"; }
+            
             exec(command + " " + quote(fileName), execOptions, function (err, stdout, stderr) {
                 if (err) {
                     cb({err: err, stdout: stdout, command: command, execOptions: execOptions});
                 } else {
                     //if using xetex then run xdvipdfmx on the generated file
-                    if (options.compiler === "xetex" || options.compiler === "xelatex") {
+                    if (options.compiler === "xetex") {
                         var xetexCommand = path.join(options.texBinDirectory, "xdvipdfmx") + " -o " + quote(path.join(dir, fileBaseName + ".pdf")) + " " + path.join(dir, fileBaseName);
                         exec(xetexCommand, execOptions, function (err, xestdout, xestderr) {
                             if (err) {
