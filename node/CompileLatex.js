@@ -14,7 +14,7 @@
         path = require("path");
     var domainId = "brackets.latex", quotes = '"';
     var osOpenCommand = {win: "start ", mac: "open ", linux: "xdg-open "};
-    var outputExtensions = {pdflatex: "pdf", xetex: "pdf", "xelatex": "pdf", latex: "dvi"};
+    var outputExtensions = {pdflatex: "pdf", xetex: "pdf", xelatex: "pdf", latex: "dvi"};
     function quote(str) { return '"' + str + '"'; }
     
     function compileFile(options, cb) {
@@ -34,7 +34,7 @@
                 + outputDirectory,
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
             
-            if (options.compiler === "xetex") { command = command + " -no-pdf"; }
+            if (options.compiler === "xetex" || options.compiler === "xelatex") { command = command + " -no-pdf"; }
             exec(command + " " + quote(fileName), execOptions, function (err, stdout, stderr) {
                 if (err) {
                     cb({err: err, stdout: stdout, command: command, execOptions: execOptions});
