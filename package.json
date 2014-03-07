@@ -1,6 +1,6 @@
 {
     "name": "brackets-latex",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Brackets extension that provides support for writing and compiling latex documents",
     "homepage": "https://github.com/thehogfather/brackets-latex",
     "keywords": ["latex", "tex"],
