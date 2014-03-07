@@ -4,10 +4,11 @@
  * @date 11/29/13 9:20:10 AM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window, CodeMirror */
+/*global define, d3, require, $, brackets, window,  PathUtils, CodeMirror */
 define(function (require, exports, module) {
     "use strict";
     var EditorManager       = brackets.getModule("editor/EditorManager"),
+        DocumentManager     = brackets.getModule("document/DocumentManager"),
         ProjectManager      = brackets.getModule("project/ProjectManager"),
         PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
         DefaultSettings     = require("DefaultSettings"),
@@ -103,8 +104,23 @@ define(function (require, exports, module) {
         }
     }
     
+    function _currentDocChangedHandler() {
+         // get programming language
+         var doc = DocumentManager.getCurrentDocument(),
+             ext = doc ? PathUtils.filenameExtension(doc.file.fullPath).toLowerCase().substr(1) : ""; // delete the dot
+        
+        // Only show Tex and the right bar, if it's a tex related file
+        if (texRelateFiledExtensions.indexOf(ext) !== -1) {
+            $("#latex-toolbar-icon").css('display','block');
+        } else {
+            $("#latex-toolbar-icon").css('display','none');
+        }
+    }
+    
     function init() {
+             
         latexIcon = $("<a id='latex-toolbar-icon' href='#'></a>").appendTo($("#main-toolbar .buttons")).addClass("disabled");
+        
         latexIcon.on("click", function () {
             //toggle panel if the document type is tex related
             if (activeFileIsTexRelated()) {
@@ -160,5 +176,12 @@ define(function (require, exports, module) {
     exports.bibtex = bibtex;
     exports.showSettings = showSettingsDialog;
     
-    AppInit.appReady(init);
+    // Add a document change handler
+    $(DocumentManager).on("currentDocumentChange", _currentDocChangedHandler);
+    
+    AppInit.appReady(function () {
+        init();
+        _currentDocChangedHandler();
+    });
+    
 });
