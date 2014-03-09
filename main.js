@@ -22,6 +22,9 @@ define(function (require, exports, module) {
         AppInit             = brackets.getModule("utils/AppInit"),
         SettingsDialog      = require("SettingsDialog"),
         ConsolePanel        = require("ConsolePanel"),
+        LatexKeywordHint    = require("codeHints/LatexKeywordHint"),
+        LatexLabelHint      = require("codeHints/LatexLabelHint"),
+        CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
         preferences         = PreferencesManager.getPreferenceStorage(module, DefaultSettings);
     
     var nodeCon,
@@ -105,16 +108,23 @@ define(function (require, exports, module) {
     }
     
     function _currentDocChangedHandler() {
-         // get programming language
-         var doc = DocumentManager.getCurrentDocument(),
-             ext = doc ? PathUtils.filenameExtension(doc.file.fullPath).toLowerCase().substr(1) : ""; // delete the dot
+        // get programming language
+        var doc = DocumentManager.getCurrentDocument(),
+            ext = doc ? PathUtils.filenameExtension(doc.file.fullPath).toLowerCase().substr(1) : ""; // delete the dot
         
         // Only show Tex and the right bar, if it's a tex related file
         if (texRelateFiledExtensions.indexOf(ext) !== -1) {
-            $("#latex-toolbar-icon").css('display','block');
+            $("#latex-toolbar-icon").css('display', 'block');
         } else {
-            $("#latex-toolbar-icon").css('display','none');
+            $("#latex-toolbar-icon").css('display', 'none');
         }
+    }
+    
+    function registerCodeHints() {
+        var keywordHints = new LatexKeywordHint();
+        var labelHints = new LatexLabelHint();
+        CodeHintManager.registerHintProvider(keywordHints, ["latex"], 0);
+        CodeHintManager.registerHintProvider(labelHints, ["latex"], 0);
     }
     
     function init() {
@@ -182,6 +192,7 @@ define(function (require, exports, module) {
     AppInit.appReady(function () {
         init();
         _currentDocChangedHandler();
+        registerCodeHints();
     });
     
 });
