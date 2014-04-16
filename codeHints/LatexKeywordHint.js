@@ -18,12 +18,7 @@ define(function (require, exports, module) {
     LatexKeyWordHint.prototype.hasHints = function (editor, implicitChar) {
         //the editor should have hints for all latex keywords (triggered by a \)
         this.editor = editor;
-        var cursor = editor.getCursorPos();
-        var cm = editor._codeMirror;
-        var token = cm.getTokenAt(cursor);
-        return properties.some(function (d) {
-            return d.indexOf(token.string) === 0;
-        });
+        return implicitChar ? implicitChar === "\\" : false;
     };
      /**
      * Returns a list of availble latex propertyname or -value hints if possible for the current
@@ -52,11 +47,21 @@ define(function (require, exports, module) {
     LatexKeyWordHint.prototype.getHints = function (implicitChar) {
         var cursor = this.editor.getCursorPos(),
             token = this.editor._codeMirror.getTokenAt(cursor);
-        
+        		
         var q = token.string.substr(0, cursor.ch - token.start);
+		
+		var i = 0;
+		var max_hints = 8;
+		
         var hints = properties.filter(function (d) {
-            return d.indexOf(q) === 0;
+			if (i === max_hints) { return false; }
+			if (d.indexOf(q) === 0) {
+				i++;
+				return true;
+			}
+            return false;
         });
+		
         if (hints && hints.length) {
             return {
                 hints: hints,
