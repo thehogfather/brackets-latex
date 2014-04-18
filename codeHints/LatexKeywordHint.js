@@ -11,19 +11,25 @@ define(function (require, exports, module) {
         CodeHintManager      = brackets.getModule("editor/CodeHintManager"),
         TokenUtils           = brackets.getModule("utils/TokenUtils"),
         LatexKeywords        = require("text!codeHints/LatexKeywords.json"),
-        value_props   		 = JSON.parse(LatexKeywords).values,
+        value_props          = JSON.parse(LatexKeywords).values,
         begin_props          = JSON.parse(LatexKeywords).begin;
     
 	var insert_curly = false;
     function LatexKeyWordHint() { }
     
+    // reverse a string
+    function reverse_str(s) {
+        return s.split("").reverse().join("");
+    }
+    
     LatexKeyWordHint.prototype.hasHints = function (editor, implicitChar) {
         //the editor should have hints for all latex keywords (triggered by a \)
         this.editor = editor;
-		if (!implicitChar) return false;
+		if (!implicitChar) { return false; }
 		if (implicitChar === "\\" || implicitChar === "{") {
 			return true;
-		} return false;
+		}
+        return false;
     };
      /**
      * Returns a list of availble latex propertyname or -value hints if possible for the current
@@ -54,49 +60,51 @@ define(function (require, exports, module) {
             token = this.editor._codeMirror.getTokenAt(cursor);
        
 	    // get the line and reverse the text
-		var lineBeginning = {line:cursor.line,ch:0};
+		var lineBeginning = {line: cursor.line, ch: 0};
 		var textBeforeCursor = this.editor.document.getRange(lineBeginning, cursor);
 		var reversed_text = reverse_str(textBeforeCursor);
 		
-		var pos_curly = reversed_text.indexOf("{");
+		var pos_curly = reversed_text.indexOf("{"), start_char;
 		if (pos_curly >= 0 && pos_curly < reversed_text.indexOf("\\")) {
-			var start_char = '{';
+			start_char = '{';
 		} else {
-			var start_char =  '\\';
+			start_char =  '\\';
 		}
 		
 		var i = 0;
 		var max_hints = 8;
-		var q = token.string.substr(0, cursor.ch - token.start);
+		var q = token.string.substr(0, cursor.ch - token.start),
+            hints,
+            word;
 		
 		switch (start_char) {
-			case "\\":
-					insert_curly = false;
-					var hints = value_props.filter(function (d) {
-						if (i === max_hints) { return false; }
-						if (d.indexOf(q) === 0) {
-							i++;
-							return true;
-						}
-						return false;
-					});
-					break;
-			case "{": // hints for words after \begin{ or \end{
-					var word = reverse_str(reversed_text.substring(reversed_text.indexOf("{")+1,reversed_text.indexOf("\\"))).trim();
-					
-					if (q === "{") { q = q.substr(1); }
-					if (word === "begin" || word === "end") {
-						var hints = begin_props.filter(function (d) {
-							if (i === max_hints) { return false; }
-							if (d.indexOf(q) === 0) {
-								i++;
-								return true;
-							}
-							return false;
-						});	
-						insert_curly = true;
-					} else { hints = [] };
-					break;
+        case "\\":
+            insert_curly = false;
+            hints = value_props.filter(function (d) {
+                if (i === max_hints) { return false; }
+                if (d.indexOf(q) === 0) {
+                    i++;
+                    return true;
+                }
+                return false;
+            });
+            break;
+        case "{": // hints for words after \begin{ or \end{
+            word = reverse_str(reversed_text.substring(reversed_text.indexOf("{") + 1, reversed_text.indexOf("\\"))).trim();
+
+            if (q === "{") { q = q.substr(1); }
+            if (word === "begin" || word === "end") {
+                hints = begin_props.filter(function (d) {
+                    if (i === max_hints) { return false; }
+                    if (d.indexOf(q) === 0) {
+                        i++;
+                        return true;
+                    }
+                    return false;
+                });
+                insert_curly = !this.editor._getOption("closeBrackets");
+            } else { hints = []; }
+            break;
 		}
 	
 		
@@ -119,16 +127,15 @@ define(function (require, exports, module) {
             end = {line: cursor.line, ch: token.end};
 		
 		// add a curly bracket if it's after a begin or and (insert_curly == true) and if the first char which should be changed is a {
-		hint = (insert_curly && token.string.charAt(0) === '{') ? '{'+hint : hint;
-		hint = insert_curly ? hint+'}' : hint;
+		hint = (insert_curly && token.string.charAt(0) === '{') ? '{' + hint : hint;
+		hint = insert_curly ? hint + '}' : hint;
         this.editor.document.replaceRange(hint, start, end);
+        
+        this.editor.setCursorPos({line: cursor.line, ch: this.editor.getCursorPos().ch + 1});
         return false;
     };
     
-	// reverse a string
-    function reverse_str(s){
-        return s.split("").reverse().join("");
-    }
+	
 	
     module.exports = LatexKeyWordHint;
 });
