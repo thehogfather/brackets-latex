@@ -93,6 +93,8 @@
 		"\\Huge",
 		"\\IfFileExists",
 		"\\Im",
+		"\\impliedby",
+		"\\implies",
 		"\\IndexInput",
 		"\\IndexMin",
 		"\\IndexParms",
