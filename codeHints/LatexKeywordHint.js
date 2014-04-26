@@ -64,6 +64,7 @@ define(function (require, exports, module) {
 		var textBeforeCursor = this.editor.document.getRange(lineBeginning, cursor);
 		var reversed_text = reverse_str(textBeforeCursor);
 		
+		
 		var pos_curly = reversed_text.indexOf("{"), start_char;
 		if (pos_curly >= 0 && pos_curly < reversed_text.indexOf("\\")) {
 			start_char = '{';
@@ -79,15 +80,18 @@ define(function (require, exports, module) {
 		
 		switch (start_char) {
         case "\\":
-            insert_curly = false;
-            hints = value_props.filter(function (d) {
-                if (i === max_hints) { return false; }
-                if (d.indexOf(q) === 0) {
-                    i++;
-                    return true;
-                }
-                return false;
-            });
+			// only one and not 2 backslashes! (\\ is a line break)
+			if (reversed_text.substr(0,2) != '\\\\') {
+				insert_curly = false;
+				hints = value_props.filter(function (d) {
+					if (i === max_hints) { return false; }
+					if (d.indexOf(q) === 0) {
+						i++;
+						return true;
+					}
+					return false;
+				});
+			}
             break;
         case "{": // hints for words after \begin{ or \end{
             word = reverse_str(reversed_text.substring(reversed_text.indexOf("{") + 1, reversed_text.indexOf("\\"))).trim();
