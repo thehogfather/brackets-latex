@@ -10,7 +10,8 @@ define(function (require, exports, module) {
     var PanelManager                    = brackets.getModule("view/PanelManager"),
         panelTemplate                   = require("text!htmlTemplates/latex-console.html"),
         Strings                         = require("i18n!nls/strings"),
-        Main                            = require("main");
+        Main                            = require("main"),
+        preferences                     = require("Preferences");
     var consolePanel;
     
     function clearConsole() {
@@ -31,17 +32,15 @@ define(function (require, exports, module) {
         if (consolePanel) { consolePanel.setVisible(false); }
     }
     
-    function compilerChanged(preferences) {
-        return function () {
-            preferences.setValue("compiler", $("div#latex-console #settings-compiler").val());
-        };
+    function compilerChanged() {
+        preferences.set("compiler", $("div#latex-console #settings-compiler").val());
     }
     
-    function showConsolePanel(preferences) {
+    function showConsolePanel() {
         if (!consolePanel) {
             var panelHtml = Mustache.render(panelTemplate, Strings);
             consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
-            $("#settings-compiler #option-" + preferences.compiler).prop("selected", true);
+            $("#settings-compiler #option-" + preferences.get("compiler")).prop("selected", true);
 
             consolePanel.$panel
                 .on("click", ".close", hideConsolePanel)
@@ -49,7 +48,7 @@ define(function (require, exports, module) {
                 .on("click", "button.bibtex", bibtex)
                 .on("click", "button.tex-settings", showSettings)
                 .on("click", "button.clear-console", clearConsole)
-                .on("change", "select", compilerChanged(preferences));
+                .on("change", "select", compilerChanged);
         }
         consolePanel.setVisible(true);
     }
@@ -61,16 +60,16 @@ define(function (require, exports, module) {
         $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
     }
         
-    function toggle(prefs) {
+    function toggle() {
         if (!consolePanel || !consolePanel.isVisible()) {
-            showConsolePanel(prefs);
+            showConsolePanel();
         } else {
             hideConsolePanel();
         }
     }
     
-    exports.show = function (pref) {
-        showConsolePanel(pref);
+    exports.show = function () {
+        showConsolePanel();
         return this;
     };
     exports.hide = function () {
@@ -83,8 +82,8 @@ define(function (require, exports, module) {
         return this;
     };
     
-    exports.toggle  = function (prefs) {
-        toggle(prefs);
+    exports.toggle  = function () {
+        toggle();
         return this;
     };
     

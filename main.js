@@ -4,13 +4,12 @@
  * @date 11/29/13 9:20:10 AM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window,  PathUtils, CodeMirror */
+/*global define, d3, require, $, brackets, window,  PathUtils */
 define(function (require, exports, module) {
     "use strict";
     var EditorManager       = brackets.getModule("editor/EditorManager"),
         DocumentManager     = brackets.getModule("document/DocumentManager"),
         ProjectManager      = brackets.getModule("project/ProjectManager"),
-        PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
         DefaultSettings     = require("DefaultSettings"),
         CommandManager      = brackets.getModule("command/CommandManager"),
         KeyBindingManager   = brackets.getModule("command/KeyBindingManager"),
@@ -25,7 +24,7 @@ define(function (require, exports, module) {
         LatexKeywordHint    = require("codeHints/LatexKeywordHint"),
         LatexLabelHint      = require("codeHints/LatexLabelHint"),
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
-        preferences         = PreferencesManager.getPreferenceStorage(module, DefaultSettings);
+        preferences         = require("Preferences");
     
     var nodeCon,
         latexIcon,
@@ -96,7 +95,7 @@ define(function (require, exports, module) {
     }
     
     function showSettingsDialog() {
-        SettingsDialog.show(preferences);
+        SettingsDialog.show();
     }
     
     function activeFileIsTexRelated() {
@@ -134,7 +133,7 @@ define(function (require, exports, module) {
         latexIcon.on("click", function () {
             //toggle panel if the document type is tex related
             if (activeFileIsTexRelated()) {
-                ConsolePanel.toggle(preferences);
+                ConsolePanel.toggle();
             }
         });
         
@@ -158,7 +157,7 @@ define(function (require, exports, module) {
                     if (consoleStatus[current.document.file.fullPath] === false) {
                         ConsolePanel.hide();
                     } else {
-                        ConsolePanel.show(preferences);
+                        ConsolePanel.show();
                     }
                 } else {
                     ConsolePanel.hide();

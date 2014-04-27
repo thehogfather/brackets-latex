@@ -10,7 +10,8 @@ define(function (require, exports, module) {
     var Dialogs         = brackets.getModule("widgets/Dialogs"),
         DefaultSettings = require("DefaultSettings"),
         Strings         = require("i18n!nls/strings"),
-        settingsDialogTemplate = require("text!htmlTemplates/settings-dialog.html");
+        settingsDialogTemplate = require("text!htmlTemplates/settings-dialog.html"),
+        preferences     = require("Preferences");
     
     function setFormValues(prefs) {
         $("#settings-texbin-directory").val(prefs.texBinDirectory);
@@ -31,18 +32,18 @@ define(function (require, exports, module) {
         });
     }
     
-    function showDialog(prefs) {
+    function showDialog() {
         var template = Mustache.render(settingsDialogTemplate, Strings);
         var dialog = Dialogs.showModalDialogUsingTemplate(template);
-        setFormValues(prefs.getAllValues());
+        setFormValues(preferences.getAllValues());
         
         dialog.done(function (buttonId) {
             if (buttonId === "ok") {
                 var $dialog = dialog.getElement();
-                prefs.setValue("texBinDirectory", $("#settings-texbin-directory", $dialog).val());
-                prefs.setValue("outputDirectory", $("#settings-output-directory", $dialog).val());
+                preferences.set("texBinDirectory", $("#settings-texbin-directory", $dialog).val());
+                preferences.set("outputDirectory", $("#settings-output-directory", $dialog).val());
 //                prefs.setValue("draftMode", $("#settings-draftmode", $dialog).prop("checked"));
-                prefs.setValue("compiler", $("#settings-compiler", $dialog).val());
+                preferences.set("compiler", $("#settings-compiler", $dialog).val());
             }
         });
     }

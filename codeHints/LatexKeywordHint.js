@@ -81,7 +81,7 @@ define(function (require, exports, module) {
 		switch (start_char) {
         case "\\":
 			// only one and not 2 backslashes! (\\ is a line break)
-			if (reversed_text.substr(0,2) != '\\\\') {
+			if (reversed_text.substr(0, 2) !== '\\\\') {
 				insert_curly = false;
 				hints = value_props.filter(function (d) {
 					if (i === max_hints) { return false; }
