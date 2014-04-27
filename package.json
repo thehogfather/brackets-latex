@@ -8,7 +8,7 @@
     "categories": ["editing", "typesetting"],
     "engines":{
         "brackets" : ">=0.32.0"
-    }
+    },
     "license": "MIT",
     "contributors": [{"name": "Patrick Oladimeji"}, {"email": "thehogfather@dustygem.co.uk"}]
 }
