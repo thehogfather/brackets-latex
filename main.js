@@ -139,7 +139,7 @@ define(function (require, exports, module) {
         
         LanguageManager.defineLanguage("latex", {
             name: "Latex",
-            mode: "stex",
+            mode: ["stex", "text/x-stex"],
             fileExtensions: ["tex", "bib", "cls"],
             lineComment: ["%"]
         });
@@ -150,9 +150,6 @@ define(function (require, exports, module) {
             }
             if (current) {
                 if (activeFileIsTexRelated()) {
-                    var cm = current._codeMirror;
-                    var mode = cm.getMode({tabSize: 4}, "stex");
-                    cm.setOption("mode", mode);
                     latexIcon.addClass("on").removeClass("disabled");
                     if (consoleStatus[current.document.file.fullPath] === false) {
                         ConsolePanel.hide();
