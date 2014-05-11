@@ -123,7 +123,7 @@ define(function (require, exports, module) {
         var keywordHints = new LatexKeywordHint();
         var labelHints = new LatexLabelHint();
         CodeHintManager.registerHintProvider(keywordHints, ["latex"], 0);
-        CodeHintManager.registerHintProvider(labelHints, ["latex"], 0);
+        CodeHintManager.registerHintProvider(labelHints, ["latex"], 1);
     }
     
     function init() {

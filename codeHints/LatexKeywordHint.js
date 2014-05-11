@@ -11,6 +11,7 @@ define(function (require, exports, module) {
         CodeHintManager      = brackets.getModule("editor/CodeHintManager"),
         TokenUtils           = brackets.getModule("utils/TokenUtils"),
         LatexKeywords        = require("text!codeHints/LatexKeywords.json"),
+        LatexContextHelper   = require("codeHints/LatexContextHelper"),
         value_props          = JSON.parse(LatexKeywords).values,
         begin_props          = JSON.parse(LatexKeywords).begin;
     
@@ -22,13 +23,26 @@ define(function (require, exports, module) {
         return s.split("").reverse().join("");
     }
     
+    /**
+    There is a keyword hint iff we are in one of the states below
+        1. we are in a context matching \
+        2. we are in a context matching \(\w+)
+        3. we are in a context matching \(\w+){
+        4. we are in a context matching \(\w+){(\w+)
+    */
     LatexKeyWordHint.prototype.hasHints = function (editor, implicitChar) {
         //the editor should have hints for all latex keywords (triggered by a \)
         this.editor = editor;
-		if (!implicitChar) { return false; }
-		if (implicitChar === "\\" || implicitChar === "{") {
+        if (implicitChar && (implicitChar === "\\" || implicitChar === "{")) {
 			return true;
-		}
+		} else {
+            var contextTokens = LatexContextHelper.getContextTokens(editor);
+            if (contextTokens.keyWordToken.string.indexOf("\\") === 0
+                    || contextTokens.bracketToken.string === "{") {
+                return true;
+            }
+        }
+		
         return false;
     };
      /**

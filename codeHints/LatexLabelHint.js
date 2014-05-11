@@ -10,22 +10,24 @@ define(function (require, exports, module) {
     var AppInit              = brackets.getModule("utils/AppInit"),
         CodeHintManager      = brackets.getModule("editor/CodeHintManager"),
         TokenUtils           = brackets.getModule("utils/TokenUtils"),
-        LatexDocumentParser  = require("codeHints/LatexDocumentParser");
+        LatexDocumentParser  = require("codeHints/LatexDocumentParser"),
+        LatexContextHelper   = require("codeHints/LatexContextHelper");
         
     function LatexLabelHint() {}
+    
+    /**
+        The context has hints iff
+        1. we just entered a \ref{\w*
+    */
+    function contextHasHints(editor) {
+        var contextTokens = LatexContextHelper.getContextTokens(editor);
+        return contextTokens.keyWordToken.string === "\\ref" && contextTokens.bracketToken.string === "{";
+    }
     
     LatexLabelHint.prototype.hasHints = function (editor, implicitChar) {
         //there should also be hints for references made in label tags in the document
         this.editor = editor;
-        var cursor = editor.getCursorPos();
-        var cm = editor._codeMirror, token;
-        if (implicitChar === "{") {
-            token = cm.getTokenAt({line: cursor.line, ch: cursor.ch - 1});
-            return token.string.indexOf("ref") >= 0;
-        } else {
-            return false;
-        }
-        
+        return contextHasHints(editor);
     };
      /**
      * Returns a list of availble latex propertyname or -value hints if possible for the current
@@ -52,12 +54,11 @@ define(function (require, exports, module) {
      *    to allow result string to stretch width of display.
      */
     LatexLabelHint.prototype.getHints = function (implicitChar) {
-        var cursor = this.editor.getCursorPos(),
-            token = this.editor._codeMirror.getTokenAt(cursor);
-        
-        var q = token.string[0] === "{" ? token.string.substr(1) : token.string;
+        var tokens = LatexContextHelper.getContextTokens(this.editor);
+        var label = tokens.labelToken.string;
+        var q = label === "{" ? "" : label;
         var hints = LatexDocumentParser.getLabels(this.editor.document.getText()).filter(function (d) {
-            return d.indexOf(q) > 0;
+            return d.indexOf(q) === 0;
         });
         if (hints && hints.length) {
             return {

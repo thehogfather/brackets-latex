@@ -1,7 +1,7 @@
 {
     "name": "brackets-latex",
     "author": "Patrick Oladimeji",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Brackets extension that provides support for writing and compiling latex documents",
     "homepage": "https://github.com/thehogfather/brackets-latex",
     "keywords": ["latex", "tex"],
