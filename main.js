@@ -34,12 +34,13 @@ define(function (require, exports, module) {
         LATEX_SETTINGS = "brackets-latex.settings",
         texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"],
         consoleStatus = {},
+		Strings = require("i18n!nls/strings"),
 		TEX_ROOT = "%!TEX root=";
     
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
     
     function errorFunc() {
-        console.log("something bad happened");
+        console.log(Strings.ERROR);
     }
     
     function bibtex(options) {
@@ -50,7 +51,7 @@ define(function (require, exports, module) {
             options.fileName = editor.document.file.fullPath;
         }
         
-        var compileMessage = "Please wait ... Compiling " + options.fileName + " using bibtex\n";
+        var compileMessage = options.compiler + ": " + Strings.COMPILING + " " + options.fileName +  "\n";
         ConsolePanel.clear()
             .appendMessage(compileMessage);
         
@@ -75,6 +76,10 @@ define(function (require, exports, module) {
 		}
 		return null;
 	}
+	
+	function showSettingsDialog() {
+        SettingsDialog.show();
+    }
 
     function compile() {
         var editor = EditorManager.getCurrentFullEditor();
@@ -86,10 +91,13 @@ define(function (require, exports, module) {
 			options.texRoot = texRoot;
 		}
 
-        if (options.compiler === "bibtex") {
+		if (options.texBinDirectory.trim() === "") { //ensure the tex bin directory is set
+			showSettingsDialog();
+			ConsolePanel.clear().appendMessage(Strings.TEX_BIN_DIR_ERROR);
+		} else if (options.compiler === "bibtex") {
             bibtex(options);
         } else {
-            var compileMessage = "Please wait ... Compiling " + options.fileName + " using " + options.compiler + "\n";
+            var compileMessage = options.compiler + ": " + Strings.COMPILING + " " + options.fileName +  "\n";
             ConsolePanel.clear()
                 .appendMessage(compileMessage);
             
@@ -106,11 +114,7 @@ define(function (require, exports, module) {
                 });
         }
     }
-    
-    function showSettingsDialog() {
-        SettingsDialog.show();
-    }
-    
+        
     function activeFileIsTexRelated() {
         var editor = EditorManager.getCurrentFullEditor();
         if (editor) {
@@ -183,7 +187,7 @@ define(function (require, exports, module) {
             })
             .fail(errorFunc);
 
-        CommandManager.register("Latex Settings ...", LATEX_SETTINGS, showSettingsDialog);
+        CommandManager.register(Strings.TEX_SETTINGS + " ...", LATEX_SETTINGS, showSettingsDialog);
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
     }
     
