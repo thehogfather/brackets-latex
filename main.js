@@ -33,7 +33,8 @@ define(function (require, exports, module) {
         COMPILE_BIBTEX = "bibtex.compile",
         LATEX_SETTINGS = "brackets-latex.settings",
         texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"],
-        consoleStatus = {};
+        consoleStatus = {},
+		TEX_ROOT = "%!TEX root=";
     
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
     
@@ -66,13 +67,25 @@ define(function (require, exports, module) {
             });
     }
     
+	function getTEXRoot(editor) {
+		var firstLine = editor._codeMirror.getLine(0);
+		if (firstLine.trim().indexOf(TEX_ROOT) === 0) {
+			var rootPath = firstLine.split("=")[1];
+			return rootPath.trim();
+		}
+		return null;
+	}
+
     function compile() {
         var editor = EditorManager.getCurrentFullEditor();
-    
+    	var texRoot = getTEXRoot(editor);
         var options = preferences.getAllValues();
         options.projectRoot = ProjectManager.getProjectRoot().fullPath;
         options.fileName = editor.document.file.fullPath;
-            
+        if (texRoot) {
+			options.texRoot = texRoot;
+		}
+
         if (options.compiler === "bibtex") {
             bibtex(options);
         } else {
@@ -169,12 +182,8 @@ define(function (require, exports, module) {
                 nodeCon.loadDomains([ExtensionUtils.getModulePath(module, "node/CompileLatex")], true);
             })
             .fail(errorFunc);
-        
-//        CommandManager.register("Compile Latex", COMPILE_LATEX, compile);
-//        CommandManager.register("Compile Bibtex", COMPILE_BIBTEX, bibtex);
+
         CommandManager.register("Latex Settings ...", LATEX_SETTINGS, showSettingsDialog);
-//        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_LATEX);
-//        Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(COMPILE_BIBTEX);
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
     }
     

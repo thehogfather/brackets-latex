@@ -11,6 +11,7 @@ This extension provides support for typestting documents in LaTeX within Bracket
 * Compilation of latex documents using latex, pdflatex, pslatex, xetex, xelatex or bibtex
 * Code hints for latex keywords and document labels when typesetting documents
 * Dialog for configuring where to find the TeX distribution to use for compilation
+* Compile from any file in a multi-file project by including `%!TEX root={../root.tex}` at the first line in every included file.
 
 ###To do
 * Compile on save (setting)

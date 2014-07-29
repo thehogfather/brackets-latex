@@ -20,9 +20,14 @@
     function compileFile(options, cb) {
         //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
+		//resolve the texRoot relative to the folder containing the active file
+		if (options.texRoot) {
+			var folder = path.resolve(options.fileName, "..");
+			options.texRoot = path.resolve(folder, options.texRoot);
+		}
         var dir = path.join(options.projectRoot, options.outputDirectory);
         var projectFolder = path.normalize(options.projectRoot),
-            fileName = path.relative(projectFolder, options.fileName),
+            fileName = options.texRoot ? path.relative(projectFolder, options.texRoot) : path.relative(projectFolder, options.fileName),
             prog = path.join(options.texBinDirectory, options.compiler),
             outputDirectory = " -output-directory=" + quote(dir);
         
