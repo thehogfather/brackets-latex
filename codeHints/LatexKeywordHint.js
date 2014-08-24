@@ -37,8 +37,7 @@ define(function (require, exports, module) {
 			return true;
 		} else {
             var contextTokens = LatexContextHelper.getContextTokens(editor);
-            if (contextTokens.keyWordToken.string.indexOf("\\") === 0
-                    || contextTokens.bracketToken.string === "{") {
+            if (contextTokens.keyWordToken.string.indexOf("\\") === 0 || contextTokens.bracketToken.string === "{") {
                 return true;
             }
         }

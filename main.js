@@ -22,6 +22,7 @@ define(function (require, exports, module) {
         SettingsDialog      = require("SettingsDialog"),
         ConsolePanel        = require("ConsolePanel"),
         LatexKeywordHint    = require("codeHints/LatexKeywordHint"),
+		LatexCiteKeyHint	= require("codeHints/LatexCiteKeyHint"),
         LatexLabelHint      = require("codeHints/LatexLabelHint"),
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
         preferences         = require("Preferences");
@@ -139,8 +140,10 @@ define(function (require, exports, module) {
     function registerCodeHints() {
         var keywordHints = new LatexKeywordHint();
         var labelHints = new LatexLabelHint();
+		var citeKeyHints = new LatexCiteKeyHint();
         CodeHintManager.registerHintProvider(keywordHints, ["latex"], 0);
         CodeHintManager.registerHintProvider(labelHints, ["latex"], 1);
+		CodeHintManager.registerHintProvider(citeKeyHints, ["latex"], 2);
     }
     
     function init() {
