@@ -21,12 +21,20 @@ define(function (require, exports, module) {
     
     function getLabels(text) {
         var regex = /\\label\{([\w\:]+)\}/g;
-        return _getMatches(regex, text);
+        var res = _getMatches(regex, text);
+		if (res) {
+			res.sort();
+		}
+		return res;
     }
     
     function getCiteKeys(bibtex) {
         var regex = /@\w+\{([\w\:]+),/g;
-        return _getMatches(regex, bibtex);
+        var res = _getMatches(regex, bibtex);
+		if (res) {
+			res.sort();
+		}
+		return res;
     }
     
     module.exports = {
