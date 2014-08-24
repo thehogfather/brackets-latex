@@ -27,9 +27,9 @@ define(function (require, exports, module) {
     }
 	
 	function getBibFileName(editor) {
-		var regex = /\\bibligraphy\{([^\}]+)\}/;
+		var regex = /\\bibliography\{([^\}]+)\}/;
 		var match = regex.exec(editor.document.getText());
-		var fileName = match[1];
+		var fileName = match ? match[1] : null;
 		if (fileName && fileName.indexOf(".bib") < 0) {
 			fileName = fileName.concat(".bib");
 		}
