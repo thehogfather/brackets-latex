@@ -140,7 +140,7 @@ define(function (require, exports, module) {
 	LatexKeyWordHint.prototype.getSortedHints = function(hints,q) {
 		var text = this.editor.document.getText();
 
-		var commandsRegex = q.length > 1 ? new RegExp('(\\'+q+'[a-z]*?)[ \\n$]','g') : new RegExp('(\\[a-z]*) [ \\n$]','g');
+		var commandsRegex = q.length > 1 ? new RegExp('(\\'+q+'[a-z]*?(\{[a-z]*\})?)[ \\n$]','g') : new RegExp('(\\[a-z{}]*(\{[a-z]*\})?) [ \\n$]','g');
 		var matches = null;
 		while (matches = commandsRegex.exec(text)) {
 			hints.push(matches[1]);
@@ -158,7 +158,7 @@ define(function (require, exports, module) {
 			if (hints[i] == last && !savedPos) {
 				savedPos = i;
 			} else if (hints[i] != last) {
-				while ((savedPos ? (i-savedPos) : 1) < hit) {
+				while ((savedPos ? (i-savedPos) : 1) <= hit) {
 					hit = hits[++h];
 				}
 				hits.splice(h,0,(savedPos ? (i-savedPos) : 1));
@@ -167,7 +167,14 @@ define(function (require, exports, module) {
 				last = hints[i];
 			}
 		}
-		if (savedPos) { hints.splice(savedPos,i-savedPos); }
+		if (savedPos) {
+			var hit = hits[0];
+			var h = 0;
+			while ((savedPos ? (i-savedPos) : 1) < hit) {
+					hit = hits[++h];
+			}
+			sortedHints.splice(h,0,last);
+		}
 		return sortedHints;
 	}
 
