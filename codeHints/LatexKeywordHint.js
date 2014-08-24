@@ -98,13 +98,13 @@ define(function (require, exports, module) {
 			if (reversed_text.substr(0, 2) !== '\\\\') {
 				insert_curly = false;
 				hints = value_props.filter(function (d) {
-					if (i === max_hints) { return false; }
 					if (d.indexOf(q) === 0) {
 						i++;
 						return true;
 					}
 					return false;
 				});
+				hints = this.getSortedHints(hints,q).slice(0,max_hints);
 			}
             break;
         case "{": // hints for words after \begin{ or \end{
@@ -138,6 +138,40 @@ define(function (require, exports, module) {
         }
     };
     
+	LatexKeyWordHint.prototype.getSortedHints = function(hints,q) {
+		var text = this.editor.document.getText();
+
+		var commandsRegex = q.length > 1 ? new RegExp('(\\'+q+'[a-z]*?)[ \\n$]','g') : new RegExp('(\\[a-z]*) [ \\n$]','g');
+		var matches = null;
+		while (matches = commandsRegex.exec(text)) {
+			hints.push(matches[1]);
+		}
+		// sort the hints
+		hints.sort();
+		// unique
+		var last = hints[0];
+		var savedPos = false;
+		var hits = [0];
+		var sortedHints = [];
+		for (var i = 1; i < hints.length; i++) {
+			var hit = hits[0];
+			var h = 0;
+			if (hints[i] == last && !savedPos) {
+				savedPos = i;
+			} else if (hints[i] != last) {
+				while ((savedPos ? (i-savedPos) : 1) < hit) {
+					hit = hits[++h];
+				}
+				hits.splice(h,0,(savedPos ? (i-savedPos) : 1));
+				sortedHints.splice(h,0,last);
+				savedPos = false;
+				last = hints[i];
+			}
+		}
+		if (savedPos) { hints.splice(savedPos,i-savedPos); }
+		return sortedHints;
+	}
+
     LatexKeyWordHint.prototype.insertHint = function (hint) {
         var cursor = this.editor.getCursorPos(),
             token = this.editor._codeMirror.getTokenAt(cursor),
