@@ -76,10 +76,18 @@ define(function (require, exports, module) {
 		var lineBeginning = {line: cursor.line, ch: 0};
 		var textBeforeCursor = this.editor.document.getRange(lineBeginning, cursor);
 		var reversed_text = reverse_str(textBeforeCursor);
+
+		var noHintChars = /[,.\[\]0-9 ()$|]/;
+
+		var pos_curly = reversed_text.indexOf("{");
+		var pos_backSlash = reversed_text.indexOf("\\");
+		var pos_noHint = reversed_text.search(noHintChars);
 		
+		// check if hints are available
+		if (pos_noHint >= 0 && (pos_backSlash < 0 || pos_noHint < pos_backSlash) && (pos_curly < 0 || pos_noHint < pos_curly)) return null;
 		
-		var pos_curly = reversed_text.indexOf("{"), start_char;
-		if (pos_curly >= 0 && pos_curly < reversed_text.indexOf("\\")) {
+		var start_char;
+		if (pos_curly >= 0 && pos_curly < pos_backSlash) {
 			start_char = '{';
 		} else {
 			start_char =  '\\';
@@ -140,10 +148,13 @@ define(function (require, exports, module) {
 	LatexKeyWordHint.prototype.getSortedHints = function(hints,q) {
 		var text = this.editor.document.getText();
 
-		var commandsRegex = q.length > 1 ? new RegExp('(\\'+q+'[a-z]*?(\{[a-z]*\})?)[ \\n$]','g') : new RegExp('(\\[a-z{}]*(\{[a-z]*\})?) [ \\n$]','g');
+		q = q.substr(1);
+		var commandsRegex = q.length > 0 ?	new RegExp('([\\\\]'+q+'([a-z]*?)(?:[ \\n$]|(\{[^}]+\})))','g') :
+											new RegExp('([\\\\]([A-Za-z]+)(?:[ \\n$]|(\{[^}]+\})))','g');
 		var matches = null;
 		while (matches = commandsRegex.exec(text)) {
-			hints.push(matches[1]);
+			if (matches[3]) hints.push('\\'+q+matches[2]+matches[3]);
+			hints.push('\\'+q+matches[2]);
 		}
 		// sort the hints
 		hints.sort();
@@ -189,7 +200,7 @@ define(function (require, exports, module) {
 		hint = insert_curly ? hint + '}' : hint;
         this.editor.document.replaceRange(hint, start, end);
         
-        this.editor.setCursorPos({line: cursor.line, ch: this.editor.getCursorPos().ch + 1});
+        this.editor.setCursorPos({line: cursor.line, ch: this.editor.getCursorPos().ch+1});
         return false;
     };
     
