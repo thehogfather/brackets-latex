@@ -25,7 +25,7 @@
 			var folder = path.resolve(options.fileName, "..");
 			options.texRoot = path.resolve(folder, options.texRoot);
 		}
-        var dir = path.join(options.projectRoot, options.outputDirectory);
+        var dir = path.resolve(options.projectRoot, options.outputDirectory);
         var projectFolder = path.normalize(options.projectRoot),
             fileName = options.texRoot ? path.relative(projectFolder, options.texRoot) : path.relative(projectFolder, options.fileName),
             prog = path.join(options.texBinDirectory, options.compiler),
