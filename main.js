@@ -30,6 +30,7 @@ define(function (require, exports, module) {
     var nodeCon,
         latexIcon,
         domainId = "brackets.latex",
+        COMPILE = "compile",
         COMPILE_LATEX = "latex.compile",
         COMPILE_BIBTEX = "bibtex.compile",
         LATEX_SETTINGS = "brackets-latex.settings",
@@ -84,7 +85,7 @@ define(function (require, exports, module) {
 
     function compile() {
         var editor = EditorManager.getCurrentFullEditor();
-    	var texRoot = getTEXRoot(editor);
+        var texRoot = getTEXRoot(editor);
         var options = preferences.getAllValues();
         options.projectRoot = ProjectManager.getProjectRoot().fullPath;
         options.fileName = editor.document.file.fullPath;
@@ -191,7 +192,10 @@ define(function (require, exports, module) {
             .fail(errorFunc);
 
         CommandManager.register(Strings.TEX_SETTINGS + " ...", LATEX_SETTINGS, showSettingsDialog);
+        CommandManager.register(Strings.COMPILE, COMPILE, compile);
+        
         Menu.getMenu(Menu.AppMenuBar.FILE_MENU).addMenuItem(LATEX_SETTINGS);
+        KeyBindingManager.addBinding(COMPILE, "Ctrl-Alt-B");
     }
     
     exports.compile = compile;

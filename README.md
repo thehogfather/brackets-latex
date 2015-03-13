@@ -13,6 +13,10 @@ This extension provides support for typestting documents in LaTeX within Bracket
 * Dialog for configuring where to find the TeX distribution to use for compilation
 * Compile from any file in a multi-file project by including `%!TEX root=../root.tex` at the first line in every included file.
 
+##Keyboard shortcuts
+The following are the default keyboard shortcuts. If any of the shortcut keys conflict with your keyboard or you would prefer to use another shortcut key for any reason, you can [remap the keys as described here](https://github.com/adobe/brackets/wiki/User-Key-Bindings).
+
+    Ctrl-Alt-B  compile  document
 ###To do
 * Compile on save (setting)
 * Code for bibtex reference keys
