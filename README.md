@@ -19,7 +19,6 @@ The following are the default keyboard shortcuts. If any of the shortcut keys co
     Ctrl-Alt-B  compile  document
 ###To do
 * Compile on save (setting)
-* Code for bibtex reference keys
 
 ###License
 MIT licensed.

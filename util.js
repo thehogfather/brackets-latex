@@ -1,10 +1,10 @@
 /**
- * 
- * @author Patrick Oladimeji
- * @date 12/9/13 10:14:09 AM
+ * [[Description]]
+ * @param   {[[Type]]} function (require [[Description]]
+ * @param   {Object}   exports           [[Description]]
+ * @param   {[[Type]]} module            [[Description]]
+ * @returns {[[Type]]} [[Description]]
  */
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window, MouseEvent */
 define(function (require, exports, module) {
     "use strict";
     /**
@@ -21,6 +21,6 @@ define(function (require, exports, module) {
         }
         return res;
     }
-    
+
     exports.matchAll = _matchAll;
 });

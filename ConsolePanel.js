@@ -4,7 +4,7 @@
  * @date 12/2/13 21:44:03 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window, Mustache, setTimeout */
+/*global define, $, brackets, Mustache*/
 define(function (require, exports, module) {
     "use strict";
     var PanelManager                    = brackets.getModule("view/PanelManager"),
@@ -13,29 +13,29 @@ define(function (require, exports, module) {
         Main                            = require("main"),
         preferences                     = require("Preferences");
     var consolePanel;
-    
+
     function clearConsole() {
         $("pre#console", consolePanel.$panel).html("");
     }
-    
+
     function compile() {
         Main.compile();
     }
-    
+
     function bibtex() {
         Main.bibtex();
     }
-    
+
     function showSettings() { Main.showSettings(); }
-    
+
     function hideConsolePanel() {
         if (consolePanel) { consolePanel.setVisible(false); }
     }
-    
+
     function compilerChanged() {
         preferences.set("compiler", $("div#latex-console #settings-compiler").val());
     }
-    
+
     function showConsolePanel() {
         if (!consolePanel) {
             var panelHtml = Mustache.render(panelTemplate, Strings);
@@ -52,14 +52,14 @@ define(function (require, exports, module) {
         }
         consolePanel.setVisible(true);
     }
-    
+
     function appendMessage(msg) {
         showConsolePanel();
         $("pre#console", consolePanel.$panel).append(msg);
         var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
         $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
     }
-        
+
     function toggle() {
         if (!consolePanel || !consolePanel.isVisible()) {
             showConsolePanel();
@@ -67,7 +67,7 @@ define(function (require, exports, module) {
             hideConsolePanel();
         }
     }
-    
+
     exports.show = function () {
         showConsolePanel();
         return this;
@@ -76,17 +76,17 @@ define(function (require, exports, module) {
         hideConsolePanel();
         return this;
     };
-    
+
     exports.appendMessage = function (msg) {
         appendMessage(msg);
         return this;
     };
-    
+
     exports.toggle  = function () {
         toggle();
         return this;
     };
-    
+
     exports.clear = function () {
         clearConsole();
         return this;

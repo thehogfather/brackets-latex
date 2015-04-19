@@ -1,45 +1,44 @@
 /**
- * 
+ *
  * @author Patrick Oladimeji
  * @date 11/30/13 23:00:20 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, node: true */
-/*global define, d3, require, $, window, process */
+/*global*/
 (function () {
     "use strict";
     var cp = require("child_process"),
         exec = cp.exec,
-        spawn = cp.spawn,
         fs = require("fs"),
         path = require("path");
-    var domainId = "brackets.latex", quotes = '"';
+    var domainId = "brackets.latex";
     var osOpenCommand = {win: "start ", mac: "open ", linux: "xdg-open "};
     var outputExtensions = {pdflatex: "pdf", xetex: "pdf", xelatex: "pdf", latex: "dvi"};
     function quote(str) { return '"' + str + '"'; }
-    
+
     function compileFile(options, cb) {
         //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
-		//resolve the texRoot relative to the folder containing the active file
-		if (options.texRoot) {
-			var folder = path.resolve(options.fileName, "..");
-			options.texRoot = path.resolve(folder, options.texRoot);
-		}
+        //resolve the texRoot relative to the folder containing the active file
+        if (options.texRoot) {
+            var folder = path.resolve(options.fileName, "..");
+            options.texRoot = path.resolve(folder, options.texRoot);
+        }
         var dir = path.resolve(options.projectRoot, options.outputDirectory);
         var projectFolder = path.normalize(options.projectRoot),
             fileName = options.texRoot ? path.relative(projectFolder, options.texRoot) : path.relative(projectFolder, options.fileName),
             prog = path.join(options.texBinDirectory, options.compiler),
             outputDirectory = " -output-directory=" + quote(dir);
-        
+
         var fileBaseName = path.basename(fileName, path.extname(fileName));
-        
+
         fs.stat(dir, function (err, stats) {
             if (err && err.code === "ENOENT") { fs.mkdirSync(dir); }
             var command = quote(prog) + " -halt-on-error -file-line-error " + outputDirectory,
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
-            
+
             if (options.compiler === "xetex" || options.compiler === "xelatex") { command = command + " -no-pdf"; }
-            
+
             exec(command + " " + quote(fileName), execOptions, function (err, stdout, stderr) {
                 if (err) {
                     cb({err: err, stdout: stdout, command: command, execOptions: execOptions});
@@ -70,7 +69,7 @@
             });
         });
     }
-    
+
     function bibtex(options, cb) {
          //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
@@ -85,7 +84,7 @@
             if (err && err.code === "ENOENT") { fs.mkdirSync(dir); }
             var command = quote(prog) + " " + quote(bibFileArg),
                 execOptions = {cwd: projectFolder, timeout: options.timeout};
-            
+
             exec(command, execOptions, function (err, stdout, stderr) {
                 if (err) {
                     cb({err: err, stdout: stdout, command: command, execOptions: execOptions});
@@ -95,7 +94,7 @@
             });
         });
     }
-    
+
     function init(DomainManager) {
         if (!DomainManager.hasDomain(domainId)) {
             DomainManager.registerDomain(domainId, {major: 0, minor: 1});
@@ -131,6 +130,6 @@
             ]
         );
     }
-    
+
     exports.init = init;
 }());

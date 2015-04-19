@@ -4,17 +4,14 @@
  * @date 12/12/13 15:26:07 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, d3, require, $, brackets, window, MouseEvent */
+/*global define*/
 define(function (require, exports, module) {
     "use strict";
-    var AppInit              = brackets.getModule("utils/AppInit"),
-        CodeHintManager      = brackets.getModule("editor/CodeHintManager"),
-        TokenUtils           = brackets.getModule("utils/TokenUtils"),
-        LatexDocumentParser  = require("codeHints/LatexDocumentParser"),
+    var LatexDocumentParser  = require("codeHints/LatexDocumentParser"),
         LatexContextHelper   = require("codeHints/LatexContextHelper");
-        
+
     function LatexLabelHint() {}
-    
+
     /**
         The context has hints iff
         1. we just entered a \ref{\w*
@@ -23,7 +20,7 @@ define(function (require, exports, module) {
         var contextTokens = LatexContextHelper.getContextTokens(editor);
         return contextTokens.keyWordToken.string === "\\ref" && contextTokens.bracketToken.string === "{";
     }
-    
+
     LatexLabelHint.prototype.hasHints = function (editor, implicitChar) {
         //there should also be hints for references made in label tags in the document
         this.editor = editor;
@@ -31,9 +28,9 @@ define(function (require, exports, module) {
     };
      /**
      * Returns a list of availble latex propertyname or -value hints if possible for the current
-     * editor context. 
-     * 
-     * @param {Editor} implicitChar 
+     * editor context.
+     *
+     * @param {Editor} implicitChar
      * Either null, if the hinting request was explicit, or a single character
      * that represents the last insertion and that indicates an implicit
      * hinting request.
@@ -71,7 +68,7 @@ define(function (require, exports, module) {
             return null;
         }
     };
-    
+
     LatexLabelHint.prototype.insertHint = function (hint) {
         var cursor = this.editor.getCursorPos(),
             token = this.editor._codeMirror.getTokenAt(cursor),
@@ -80,6 +77,6 @@ define(function (require, exports, module) {
         this.editor.document.replaceRange(hint, start, end);
         return false;
     };
-    
+
     module.exports = LatexLabelHint;
 });
