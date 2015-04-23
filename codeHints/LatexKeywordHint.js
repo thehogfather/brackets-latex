@@ -195,8 +195,14 @@ define(function (require, exports, module) {
 
     LatexKeyWordHint.prototype.insertHint = function (hint) {
         var cursor = this.editor.getCursorPos(),
-            token = this.editor._codeMirror.getTokenAt(cursor),
-            start = {line: cursor.line, ch: token.start},
+            token = this.editor._codeMirror.getTokenAt(cursor);
+		
+		if (token.end > cursor.ch) {
+			token.string = token.string.substring(token.start,cursor.ch);	
+			token.end = cursor.ch;
+		}
+		
+		var	start = {line: cursor.line, ch: token.start},
             end = {line: cursor.line, ch: token.end};
 
         // add a curly bracket if it's after a begin or and (insert_curly == true) and if the first char which should be changed is a {
@@ -204,7 +210,7 @@ define(function (require, exports, module) {
         hint = insert_curly ? hint + '}' : hint;
         this.editor.document.replaceRange(hint, start, end);
 
-        this.editor.setCursorPos({line: cursor.line, ch: this.editor.getCursorPos().ch+1});
+        this.editor.setCursorPos({line: cursor.line, ch: this.editor.getCursorPos().ch});
         return false;
     };
 
