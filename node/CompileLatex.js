@@ -13,7 +13,7 @@
         path = require("path");
     var domainId = "brackets.latex";
     var osOpenCommand = {win: "start ", mac: "open ", linux: "xdg-open "};
-    var outputExtensions = {pdflatex: "pdf", xetex: "pdf", xelatex: "pdf", latex: "dvi"};
+    var outputExtensions = {pdflatex: "pdf", xetex: "pdf", xelatex: "pdf", latex: "dvi", "lualatex": "pdf"};
     function quote(str) { return '"' + str + '"'; }
 
     function compileFile(options, cb) {
