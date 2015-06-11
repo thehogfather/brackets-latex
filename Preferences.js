@@ -9,31 +9,34 @@ define(function (require, exports, module) {
     "use strict";
 
     var PreferenceManager        = brackets.getModule("preferences/PreferencesManager"),
-        prefs                    = PreferenceManager.getExtensionPrefs("brackets-latex"),
-        DefaultSettings          = require("DefaultSettings");
+        prefs                    = PreferenceManager.getExtensionPrefs("brackets-latex");
+    //define default preference values
+    prefs.definePreference("texBinDirectory", "string", brackets.platform === "win" ? "" : "/usr/texbin");
+    prefs.definePreference("timeout", "number", 60000);
+    prefs.definePreference("outputDirectory", "string", "out");
+    prefs.definePreference("compiler", "string", "pdflatex");
+    prefs.definePreference("platform", "string", brackets.platform);
 
     function get(key) {
-        return prefs.get(key) || DefaultSettings[key];
+        return prefs.get(key, PreferenceManager.CURRENT_PROJECT);
     }
 
     function getAllValues() {
-        var props = {};
-        Object.keys(DefaultSettings).forEach(function (key) {
+        var props = {}, keys = ["texBinDirectory", "timeout", "outputDirectory", "compiler", "platform"];
+        keys.forEach(function (key) {
             props[key] = get(key);
         });
         return props;
     }
 
-
-
     function set(key, value) {
-        prefs.set(key, value);
-        prefs.save();
+        prefs.set(key, value, { location: { scope: "project"}});
     }
 
     module.exports = {
         getAllValues: getAllValues,
         get: get,
-        set: set
+        set: set,
+        prefsObject: prefs
     };
 });

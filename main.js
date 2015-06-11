@@ -50,6 +50,7 @@ define(function (require, exports, module) {
             options = preferences.getAllValues();
             options.projectRoot = ProjectManager.getProjectRoot().fullPath;
             options.fileName = editor.document.file.fullPath;
+            options.compiler = "bibtex";
         }
 
         var compileMessage = options.compiler + ": " + Strings.COMPILING + " " + options.fileName +  "\n";

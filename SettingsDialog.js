@@ -16,7 +16,6 @@ define(function (require, exports, module) {
     function setFormValues(prefs) {
         $("#settings-texbin-directory").val(prefs.texBinDirectory);
         $("#settings-output-directory").val(prefs.outputDirectory);
-//        $("#settings-draftmode").prop("checked", prefs.draftMode);
         $("#settings-compiler #option-" + prefs.compiler).prop("selected", true);
     }
 
@@ -42,7 +41,6 @@ define(function (require, exports, module) {
                 var $dialog = dialog.getElement();
                 preferences.set("texBinDirectory", $("#settings-texbin-directory", $dialog).val());
                 preferences.set("outputDirectory", $("#settings-output-directory", $dialog).val());
-//                prefs.setValue("draftMode", $("#settings-draftmode", $dialog).prop("checked"));
                 preferences.set("compiler", $("#settings-compiler", $dialog).val());
             }
         });

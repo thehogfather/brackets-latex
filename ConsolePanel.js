@@ -36,11 +36,14 @@ define(function (require, exports, module) {
         preferences.set("compiler", $("div#latex-console #settings-compiler").val());
     }
 
+    function updateCompiler() {
+        $("#settings-compiler #option-" + preferences.get("compiler")).prop("selected", true);
+    }
+
     function showConsolePanel() {
         if (!consolePanel) {
             var panelHtml = Mustache.render(panelTemplate, Strings);
             consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
-            $("#settings-compiler #option-" + preferences.get("compiler")).prop("selected", true);
 
             consolePanel.$panel
                 .on("click", ".close", hideConsolePanel)
@@ -50,6 +53,7 @@ define(function (require, exports, module) {
                 .on("click", "button.clear-console", clearConsole)
                 .on("change", "select", compilerChanged);
         }
+        updateCompiler();
         consolePanel.setVisible(true);
     }
 
@@ -68,6 +72,12 @@ define(function (require, exports, module) {
         }
     }
 
+    //register change handler for preferences so that the compiler value is updated on the console panel if the preference is changed
+    preferences.prefsObject.on("change", function (e, data) {
+        updateCompiler();
+    });
+
+    //exported apis
     exports.show = function () {
         showConsolePanel();
         return this;
@@ -94,4 +104,5 @@ define(function (require, exports, module) {
     exports.isVisible = function () {
         return consolePanel && consolePanel.isVisible();
     };
+
 });
