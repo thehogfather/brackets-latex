@@ -14,7 +14,7 @@ define(function (require, exports, module) {
         KeyBindingManager   = brackets.getModule("command/KeyBindingManager"),
         Menu                = brackets.getModule("command/Menus"),
         LanguageManager     = brackets.getModule("language/LanguageManager"),
-        NodeConnection      = brackets.getModule("utils/NodeConnection"),
+        NodeDomain          = brackets.getModule("utils/NodeDomain"),
         ExtensionUtils      = brackets.getModule("utils/ExtensionUtils"),
         FileUtils           = brackets.getModule("file/FileUtils"),
         AppInit             = brackets.getModule("utils/AppInit"),
@@ -28,9 +28,9 @@ define(function (require, exports, module) {
         preferences         = require("Preferences"),
         CodeMirror          = brackets.getModule("thirdparty/CodeMirror2/lib/codemirror");
 
-    var nodeCon,
+     var latexDomain,
         latexIcon,
-        domainId = "brackets.latex",
+        domainId = "bracketsLatex",
         COMPILE = "compile",
         LATEX_SETTINGS = "brackets-latex.settings",
         texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"],
@@ -39,10 +39,6 @@ define(function (require, exports, module) {
         TEX_ROOT = "%!TEX root=";
 
     ExtensionUtils.loadStyleSheet(module, "less/brackets-latex.less");
-
-    function errorFunc() {
-        console.log(Strings.ERROR);
-    }
 
     function bibtex(options) {
         if (!options) {
@@ -57,7 +53,7 @@ define(function (require, exports, module) {
         ConsolePanel.clear()
             .appendMessage(compileMessage);
 
-        nodeCon.domains[domainId].bibtex(options)
+        latexDomain.exec("bibtex", options)
             .done(function (res) {
                 latexIcon.addClass("on").removeClass("error");
                 console.log(res);
@@ -103,7 +99,7 @@ define(function (require, exports, module) {
             ConsolePanel.clear()
                 .appendMessage(compileMessage);
 
-            nodeCon.domains[domainId].compile(options)
+            latexDomain.exec("compile", options)
                 .done(function (res) {
                     latexIcon.addClass("on").removeClass("error");
                     console.log(res);
@@ -148,7 +144,6 @@ define(function (require, exports, module) {
     }
 
     function init() {
-
         latexIcon = $("<a id='latex-toolbar-icon' href='#'></a>").appendTo($("#main-toolbar .buttons")).addClass("disabled");
 
         latexIcon.on("click", function () {
@@ -185,13 +180,13 @@ define(function (require, exports, module) {
             }
         });
 
-        nodeCon = new NodeConnection();
-        nodeCon.connect(true)
-            .done(function () {
-                nodeCon.loadDomains([ExtensionUtils.getModulePath(module, "node/CompileLatex")], true);
-            })
-            .fail(errorFunc);
+        latexDomain = new NodeDomain(domainId, ExtensionUtils.getModulePath(module, "node/CompileLatex"));
 
+        latexDomain.on("progress", function (event, data) {
+            var timeString = new Date(data.ts).toTimeString();
+            ConsolePanel.appendMessage("\n[" + timeString + "]:  " + data.message);
+            console.log(data);
+        });
         CommandManager.register(Strings.TEX_SETTINGS + " ...", LATEX_SETTINGS, showSettingsDialog);
         CommandManager.register(Strings.COMPILE, COMPILE, compile);
 
