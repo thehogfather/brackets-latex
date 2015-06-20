@@ -49,10 +49,14 @@
                 fs.mkdirSync(dir);
                 log("output directory created at " + dir);
             }
-            var command = quote(prog) + " -halt-on-error -file-line-error " + outputDirectory + " " + quote(path.basename(fileName)),
+            var commandArgs = " -halt-on-error -file-line-error ";
+            if (options.compiler === "xetex" || options.compiler === "xelatex") {
+                commandArgs = commandArgs.concat(" -no-pdf ");
+            }
+
+            var command = quote(prog) + commandArgs + outputDirectory + " " + quote(path.basename(fileName)),
                 execOptions = {cwd: folderName, timeout: options.timeout};
 
-            if (options.compiler === "xetex" || options.compiler === "xelatex") { command = command + " -no-pdf"; }
 
             exec("cd " + quote(folderName), null, function (err, stdout, stderr) {
                 if (err) {
