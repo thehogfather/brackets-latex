@@ -45,7 +45,8 @@ define(function (require, exports, module) {
             var editor = EditorManager.getCurrentFullEditor();
             options = preferences.getAllValues();
             options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-            options.fileName = editor.document.file.fullPath;
+            options.fileName = preferences.get("mainFile") ? options.projectRoot + "/" + preferences.get("mainFile") :
+                    editor.document.file.fullPath;
             options.compiler = "bibtex";
         }
 
@@ -84,7 +85,8 @@ define(function (require, exports, module) {
         var texRoot = getTEXRoot(editor);
         var options = preferences.getAllValues();
         options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-        options.fileName = editor.document.file.fullPath;
+        options.fileName = preferences.get("mainFile") ? options.projectRoot + "/" + preferences.get("mainFile") :
+                editor.document.file.fullPath;
         if (texRoot) {
             options.texRoot = texRoot;
         }

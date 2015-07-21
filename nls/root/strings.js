@@ -23,6 +23,7 @@ define(function (require, exports, module) {
         "BUTTON_COMPILE" : "Compile",
         "BUTTON_BIBTEX": "Bibtex",
         "COMPILING": "Compiling",
-        "ERROR": "something bad happened :("
+        "ERROR": "something bad happened :(",
+        "MAIN_FILE": "main file"
     };
 });

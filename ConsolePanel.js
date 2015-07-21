@@ -9,8 +9,10 @@ define(function (require, exports, module) {
     "use strict";
     var PanelManager                    = brackets.getModule("view/PanelManager"),
         panelTemplate                   = require("text!htmlTemplates/latex-console.html"),
+        ProjectManager                  = brackets.getModule("project/ProjectManager"),
         Strings                         = require("i18n!nls/strings"),
         Main                            = require("main"),
+        FileUtils                       = brackets.getModule("file/FileUtils"),
         preferences                     = require("Preferences");
     var consolePanel;
 
@@ -36,24 +38,44 @@ define(function (require, exports, module) {
         preferences.set("compiler", $("div#latex-console #settings-compiler").val());
     }
 
+    function mainFileChanged() {
+        preferences.set("mainFile", $("#main-file").val());
+    }
+
     function updateCompiler() {
         $("#settings-compiler #option-" + preferences.get("compiler")).prop("selected", true);
     }
 
+    function updateMainFile() {
+        $("#main-file").val(preferences.get("mainFile"));
+    }
+
     function showConsolePanel() {
         if (!consolePanel) {
-            var panelHtml = Mustache.render(panelTemplate, Strings);
-            consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
+            var projectRoot = ProjectManager.getProjectRoot().fullPath;
+            ProjectManager.getAllFiles().then(function (res) {
+                var files = res.map(function (d) {
+                    return d.fullPath.substring(projectRoot.length);
+                }).filter(function (f) {
+                    return FileUtils.getFileExtension(f) === "tex";
+                });
+                var panelHtml = Mustache.render(panelTemplate, {strings: Strings, files: files});
+                consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
 
-            consolePanel.$panel
-                .on("click", ".close", hideConsolePanel)
-                .on("click", "button.compile", compile)
-                .on("click", "button.bibtex", bibtex)
-                .on("click", "button.tex-settings", showSettings)
-                .on("click", "button.clear-console", clearConsole)
-                .on("change", "select", compilerChanged);
+                consolePanel.$panel
+                    .on("click", ".close", hideConsolePanel)
+                    .on("click", "button.compile", compile)
+                    .on("click", "button.bibtex", bibtex)
+                    .on("click", "button.tex-settings", showSettings)
+                    .on("click", "button.clear-console", clearConsole)
+                    .on("change", "select#settings-compiler", compilerChanged)
+                    .on("change", "select#main-file", mainFileChanged);
+            }, function (err) {
+                console.log(err);
+            });
         }
         updateCompiler();
+        updateMainFile();
         consolePanel.setVisible(true);
     }
 

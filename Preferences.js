@@ -16,13 +16,14 @@ define(function (require, exports, module) {
     prefs.definePreference("outputDirectory", "string", "out");
     prefs.definePreference("compiler", "string", "pdflatex");
     prefs.definePreference("platform", "string", brackets.platform);
+    prefs.definePreference("mainFile", "string", "");
 
     function get(key) {
         return prefs.get(key, PreferenceManager.CURRENT_PROJECT);
     }
 
     function getAllValues() {
-        var props = {}, keys = ["texBinDirectory", "timeout", "outputDirectory", "compiler", "platform"];
+        var props = {}, keys = ["texBinDirectory", "timeout", "outputDirectory", "compiler", "platform", "mainFile"];
         keys.forEach(function (key) {
             props[key] = get(key);
         });

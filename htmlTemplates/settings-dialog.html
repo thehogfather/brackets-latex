@@ -1,15 +1,15 @@
 <div id="latex-settings-dialog" class="modal">
     <div class="modal-header">
-        <h1 class="dialog-title">{{TEX_SETTINGS}}</h1>
+        <h1 class="dialog-title">{{strings.TEX_SETTINGS}}</h1>
     </div>
     <div class="modal-body">
-        <label for="settings-texbin-directory">{{TEX_BIN_DIRECTORY}}:</label>
+        <label for="settings-texbin-directory">{{strings.TEX_BIN_DIRECTORY}}:</label>
         <input type="text" id="settings-texbin-directory"/>
         <br/>
-        <label for="settings-output-directory">{{OUTPUT_DIRECTORY}}:</label>
+        <label for="settings-output-directory">{{strings.OUTPUT_DIRECTORY}}:</label>
         <input type="text" id="settings-output-directory"/>
         <br/>
-        <label for="settings-compiler">{{COMPILER}}:</label>
+        <label for="settings-compiler">{{strings.COMPILER}}:</label>
         <select id="settings-compiler">
             <option id="option-pdflatex">pdflatex</option>
             <option id="option-latex">latex</option>
@@ -19,10 +19,17 @@
             <option id="option-bibtex">bibtex</option>
         </select>
         <br/>
+
+        <label for="main-file">{{strings.MAIN_FILE}}</label>
+        <select name="main-file" id="main-file">
+            {{#files}}
+            <option>{{&.}}</option>
+            {{/files}}
+        </select>
     </div>
     <div class="modal-footer">
-        <button data-button-id="ok" class="dialog-button btn primary left">{{BUTTON_SAVE}}</button>
-        <button data-button-id="defaults" class="dialog-button btn left">{{BUTTON_DEFAULTS}}</button>
-        <button data-button-id="cancel" class="dialog-button btn cancel">{{BUTTON_CANCEL}}</button>
+        <button data-button-id="ok" class="dialog-button btn primary left">{{strings.BUTTON_SAVE}}</button>
+        <button data-button-id="defaults" class="dialog-button btn left">{{strings.BUTTON_DEFAULTS}}</button>
+        <button data-button-id="cancel" class="dialog-button btn cancel">{{strings.BUTTON_CANCEL}}</button>
     </div>
 </div>

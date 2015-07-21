@@ -8,11 +8,20 @@
             <option id="option-xelatex">xelatex</option>
             <option id="option-bibtex">bibtex</option>
         </select>
-        <button class="btn small compile">{{BUTTON_COMPILE}}</button>
-        <button class="btn small bibtex">{{BUTTON_BIBTEX}}</button>
+        <button class="btn small compile">{{strings.BUTTON_COMPILE}}</button>
+<!--        <button class="btn small bibtex">{{strings.BUTTON_BIBTEX}}</button>-->
+        <div class="button-group">
+            <span for="main-file">{{strings.MAIN_FILE}}</span>
+            <select name="main-file" id="main-file">
+                {{#files}}
+                <option>{{&.}}</option>
+                {{/files}}
+            </select>
+        </div>
+
         <div class="right-buttons">
-            <button class="btn small clear-console">{{BUTTON_CLEAR_CONSOLE}}</button>
-            <button class="btn small tex-settings">{{TEX_SETTINGS}}</button>
+            <button class="btn small clear-console">{{strings.BUTTON_CLEAR_CONSOLE}}</button>
+            <button class="btn small tex-settings">{{strings.TEX_SETTINGS}}</button>
         </div>
         <a href="#" class="close">&times;</a>
     </div>
