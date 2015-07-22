@@ -11,14 +11,13 @@ This extension provides support for typestting documents in LaTeX within Bracket
 * Compilation of latex documents using latex, pdflatex, pslatex, xetex, xelatex or bibtex
 * Code hints for latex keywords and document labels when typesetting documents
 * Dialog for configuring where to find the TeX distribution to use for compilation
-* Compile from any file in a multi-file project by including `%!TEX root=../root.tex` at the first line in every included file.
+* Compile from any file in a multi-file project by including `%!TEX root=../root.tex` at the first line in every included file. Alternatively, set the `Main file` option in the `Settings Dialog`.
+* Compilation automatically triggers bibtex if there is a `\bibliography{bibfile}` entry in the main document.
 
 ##Keyboard shortcuts
 The following are the default keyboard shortcuts. If any of the shortcut keys conflict with your keyboard or you would prefer to use another shortcut key for any reason, you can [remap the keys as described here](https://github.com/adobe/brackets/wiki/User-Key-Bindings).
 
     Ctrl-Alt-B  compile  document
-###To do
-* Compile on save (setting)
 
 ###License
 MIT licensed.

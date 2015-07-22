@@ -1,13 +1,13 @@
 {
     "name": "brackets-latex",
     "author": "Patrick Oladimeji",
-    "version": "0.2.6",
+    "version": "0.3.0",
     "description": "Brackets extension that provides support for writing and compiling latex documents.",
     "homepage": "https://github.com/thehogfather/brackets-latex",
     "keywords": ["latex", "tex"],
     "categories": ["editing", "typesetting"],
     "engines":{
-        "brackets" : ">=0.38.0"
+        "brackets" : ">=1.0.0"
     },
     "license": "MIT",
     "contributors": [{"name": "Patrick Oladimeji"}, {"email": "thehogfather@dustygem.co.uk"}]

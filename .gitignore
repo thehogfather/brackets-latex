@@ -3,3 +3,4 @@ out/*
 *.tex
 test/*
 test_docs
+node_modules/
