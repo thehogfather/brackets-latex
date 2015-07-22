@@ -24,6 +24,6 @@ define(function (require, exports, module) {
         "BUTTON_BIBTEX": "Bibtex",
         "COMPILING": "Compiling",
         "ERROR": "something bad happened :(",
-        "MAIN_FILE": "main file"
+        "MAIN_FILE": "Main file"
     };
 });

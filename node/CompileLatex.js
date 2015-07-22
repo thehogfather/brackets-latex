@@ -7,6 +7,7 @@
 /*global*/
 (function () {
     "use strict";
+    var Promise = require("es6-promise").Promise;
     var cp = require("child_process"),
         exec = cp.exec,
         fs = require("fs"),
@@ -24,10 +25,60 @@
         _domainManager.emitEvent(domainId, "progress", [{scope: scope, message: msg, ts: Date.now()}]);
     }
 
+    /**
+     * Helper function to check if an dir exists. If the dir does not exist, it is created
+     * @param {String}  dir The directory to check
+     * @returns {Promise} A promise that resolves after the existence and/or creation of the specified folder has be completed
+     */
+    function ensureDirExists(dir) {
+        return new Promise(function (resolve, reject) {
+            fs.stat(dir, function (err, stats) {
+                if (err && err.code === "ENOENT") {
+                    //file does not exist so create it
+                    fs.mkdir(dir, function (err, res) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                } else if (err) {
+                    //if there was another error other that ENOENT
+                    reject(err);
+                } else {
+                    //file exists so resolve
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * Helper function to execute an async command in the OS
+     * @param   {String}  command  The command to execute
+     * @param   {Object}  execOpts key value pair representing options to send to nodejs exec function
+     * @returns {function} A function that when called returns a  promise that resolves with the following properties {stdout, stderr, command}
+     */
+    function execCommand(command, execOpts) {
+        return function (res) {
+            return new Promise(function (resolve, reject) {
+                log("executing " + command);
+                exec(command, execOpts, function (err, stdout, stderr) {
+                    if (err) {
+                        log("There was an error executing command " + command + "\n" + stdout.toString());
+                        reject({stdout: stdout, stderr: stderr, err: err, command: command, execOptions: execOpts});
+                    } else {
+                        resolve({stdout: stdout, stderr: stderr, command: command});
+                    }
+                });
+            });
+        };
+    }
+
     function compileFile(options, cb) {
         //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
-        var folderName = path.dirname(options.fileName), errdata, openCommand;
+        var folderName = path.dirname(options.fileName);
 
         //resolve the texRoot relative to the folder containing the active file
         if (options.texRoot) {
@@ -43,72 +94,46 @@
         var fileBaseName = path.basename(fileName, path.extname(fileName));
 
         log("output directory is " + dir, options.compiler);
-        fs.stat(dir, function (err, stats) {
-            if (err && err.code === "ENOENT") {
-                log("output directory does not exist... will create directory at " + dir);
-                fs.mkdirSync(dir);
-                log("output directory created at " + dir);
-            }
-            var commandArgs = " -halt-on-error -file-line-error ";
+        var commandArgs = " -halt-on-error -file-line-error ";
             if (options.compiler === "xetex" || options.compiler === "xelatex") {
                 commandArgs = commandArgs.concat(" -no-pdf ");
             }
 
-            var command = quote(prog) + commandArgs + outputDirectory + " " + quote(path.basename(fileName)),
+        var command = quote(prog) + commandArgs + outputDirectory + " " + quote(path.basename(fileName)),
                 execOptions = {cwd: folderName, timeout: options.timeout};
+        var cdIntoDir = "cd " + quote(folderName);
 
+        var bibtexProg = path.join(options.texBinDirectory, "bibtex");
+        var bibtexCommand = quote(bibtexProg) + " " + quote(path.join(path.relative(folderName, dir), fileBaseName));
+        var bibtexExecOptions = {cwd: folderName, timeout: options.timeout};
+        var xetexCommand = path.join(options.texBinDirectory, "xdvipdfmx") +
+            " -o " + quote(path.join(dir, fileBaseName + ".pdf")) + " " + path.join(dir, fileBaseName);
 
-            exec("cd " + quote(folderName), null, function (err, stdout, stderr) {
-                if (err) {
-                    errdata = {err: err, stdout: stdout, command: command, execOptions: execOptions};
-                    log("There was an error changing directory to " + folderName + "\n" + stdout.toString(), options.compiler);
-                    cb(errdata);
-                } else {
-                    log("Changed directory to " + folderName);
-                    log("executing " + command);
-                    exec(command , execOptions, function (err, stdout, stderr) {
-                        if (err) {
-                            errdata = {err: err, stdout: stdout, command: command, execOptions: execOptions};
-                            log("There was an error executing command " + command + "\n" + stdout.toString(), options.compiler);
-                            cb(errdata);
-                        } else {
-                            //if using xetex then run xdvipdfmx on the generated file
-                            if (options.compiler === "xetex" || options.compiler === "xelatex") {
-                                var xetexCommand = path.join(options.texBinDirectory, "xdvipdfmx") +
-                                    " -o " + quote(path.join(dir, fileBaseName + ".pdf")) + " " + path.join(dir, fileBaseName);
-                                log("executing " + xetexCommand, options.compiler);
-                                exec(xetexCommand, execOptions, function (err, xestdout, xestderr) {
-                                    if (err) {
-                                        errdata = {err: err, stdout: stdout.concat(xestdout),
-                                            command: command, execOptions: execOptions, stderr: stderr.concat(xestderr)};
-                                        log("There was an error executing command " + xetexCommand +
-                                            "\n" + errdata.stdout.toString(), options.compiler);
-                                        cb(errdata);
-                                    } else {
-                                        cb(null, {stdout: stdout.concat(xestdout), stderr: stderr.concat(xestderr)});
-                                        //try to open the generated file
-                                        var compiledFile = path.join(dir, fileBaseName + "." + outputExtensions[options.compiler]);
-                                        var args = options.platform === "win" ? quote(" ").concat(" ") : "";
-                                        openCommand = osOpenCommand[options.platform] + " " + args + quote(compiledFile);
-                                        log("executing " + openCommand, options.compiler);
-                                        exec(openCommand);
-                                    }
-                                });
-                            } else {
-                                cb(null, {stdout: stdout.toString(), stderr: stderr.toString()});
-                                //try to open the generated file
-                                var compiledFile = path.join(dir, fileBaseName + "." + outputExtensions[options.compiler]);
-                                var args = options.platform === "win" ? quote(" ").concat(" ") : "";
-                                openCommand = osOpenCommand[options.platform] + " " + args + quote(compiledFile);
-                                log("executing " + openCommand, options.compiler);
-                                exec(openCommand);
-                            }
-                        }
-                    });
+        var compiledFile = path.join(dir, fileBaseName + "." + outputExtensions[options.compiler]);
+        var args = options.platform === "win" ? quote(" ").concat(" ") : "";
+        var openCommand = osOpenCommand[options.platform] + " " + args + quote(compiledFile);
+
+        var runBibTex = execCommand(bibtexCommand, bibtexExecOptions);
+        var runXeTex = execCommand(xetexCommand, execOptions);
+        ensureDirExists(dir)
+            .then(execCommand(cdIntoDir))
+            .then(execCommand(command, execOptions))
+            .then(function () {
+                //if there is a bibfile then we should compile it and invoke compiler 2x more to link
+                if (options.bibFileName) {
+                    return runBibTex()
+                        .then(execCommand(command, execOptions))
+                        .then(execCommand(command, execOptions));
                 }
+            })
+            .then(function () {
+                if (options.compiler === "xetex" || options.compiler === "xelatex") {
+                    return runXeTex();
+                }
+            }).then(execCommand(openCommand))
+            .catch(function (err) {
+                cb(err);
             });
-
-        });
     }
 
     function bibtex(options, cb) {
@@ -123,37 +148,18 @@
             ///FIXME use a preference option so that the user can explicitly choose
             //whether to use the same folder as the tex or a custom folder to search for the bibtex
             bibtexArg = path.join(path.relative(folderName, outDir), fileNameNoExt);
-        var errdata;
 
         log("output directory is " + outDir, options.compiler);
-        fs.stat(outDir, function (err, stats) {
-            if (err && err.code === "ENOENT") {
-                log("output directory does not exist... will create directory at " + outDir);
-                fs.mkdirSync(outDir);
-                log("output directory created at " + outDir);
-            }
-            var command = quote(prog) + " " + quote(bibtexArg),
-                execOptions = {cwd: folderName, timeout: options.timeout};
+        var cdIntoDir = "cd " + quote(folderName);
+        var bibtexCommand = quote(prog) + " " + quote(bibtexArg),
+            execOptions = {cwd: folderName, timeout: options.timeout};
 
-            exec("cd " + quote(folderName), null, function (err, stdout, stderr) {
-                if (err) {
-                    errdata = {err: err, stdout: stdout, command: command, execOptions: execOptions};
-                    log("There was an error changing directory to " + folderName +
-                        "\n" + errdata.stdout.toString(), options.compiler);
-                    cb(errdata);
-                } else {
-                    log("changed directory to " + folderName, options.compiler);
-                    log("executing " + command, options.compiler);
-                    exec(command, execOptions, function (err, stdout, stderr) {
-                        if (err) {
-                            cb({err: err, stdout: stdout, command: command, execOptions: execOptions});
-                        } else {
-                            cb(null, {stdout: stdout.toString(), stderr: stderr.toString()});
-                        }
-                    });
-                }
+        ensureDirExists(outDir)
+            .then(execCommand(cdIntoDir))
+            .then(execCommand(bibtexCommand, execOptions))
+            .catch(function (err) {
+                cb(err);
             });
-        });
     }
 
     function init(DomainManager) {

@@ -37,8 +37,21 @@ define(function (require, exports, module) {
         return res;
     }
 
+    function getBibFileName(text) {
+        var regex = /\\bibliography\{([^\}]+)\}/;
+        var match = regex.exec(text);
+        var fileName = match ? match[1] : null;
+        if (fileName && fileName.indexOf(".bib") < 0) {
+            fileName = fileName.concat(".bib");
+        }
+        return fileName;
+    }
+
+
+
     module.exports = {
         getCiteKeys: getCiteKeys,
-        getLabels: getLabels
+        getLabels: getLabels,
+        getBibFileName: getBibFileName
     };
 });

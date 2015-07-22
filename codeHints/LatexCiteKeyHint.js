@@ -23,16 +23,6 @@ define(function (require, exports, module) {
         return contextTokens.keyWordToken.string === "\\cite" && contextTokens.bracketToken.string === "{";
     }
 
-    function getBibFileName(editor) {
-        var regex = /\\bibliography\{([^\}]+)\}/;
-        var match = regex.exec(editor.document.getText());
-        var fileName = match ? match[1] : null;
-        if (fileName && fileName.indexOf(".bib") < 0) {
-            fileName = fileName.concat(".bib");
-        }
-        return fileName;
-    }
-
     LatexCiteKeyHint.prototype.hasHints = function (editor, implicitChar) {
         //there should also be hints for references made in label tags in the document
         this.editor = editor;
@@ -66,7 +56,7 @@ define(function (require, exports, module) {
         var tokens = LatexContextHelper.getContextTokens(this.editor);
         var label = tokens.labelToken.string;
         var q = label === "{" ? "" : label;
-        var bibFileName = getBibFileName(this.editor);
+        var bibFileName = LatexDocumentParser.getBibFileName(this.editor.document.getText());
         if (!bibFileName) {	return null; }
 
         var res = $.Deferred();

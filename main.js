@@ -23,6 +23,7 @@ define(function (require, exports, module) {
         LatexKeywordHint    = require("codeHints/LatexKeywordHint"),
         LatexCiteKeyHint	= require("codeHints/LatexCiteKeyHint"),
         LatexLabelHint      = require("codeHints/LatexLabelHint"),
+        LatexDocumentParser = require("codeHints/LatexDocumentParser"),
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
         latexFold           = require("foldhelpers/latex-fold"),
         preferences         = require("Preferences"),
@@ -45,7 +46,7 @@ define(function (require, exports, module) {
             var editor = EditorManager.getCurrentFullEditor();
             options = preferences.getAllValues();
             options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-            options.fileName = preferences.get("mainFile") ? options.projectRoot + "/" + preferences.get("mainFile") :
+            options.fileName = preferences.get("mainFile") ? options.projectRoot + preferences.get("mainFile") :
                     editor.document.file.fullPath;
             options.compiler = "bibtex";
         }
@@ -80,39 +81,53 @@ define(function (require, exports, module) {
         SettingsDialog.show();
     }
 
+    function getMainFileDocument(path) {
+        return DocumentManager.getDocumentForPath(path);
+    }
+
     function compile() {
         var editor = EditorManager.getCurrentFullEditor();
         var texRoot = getTEXRoot(editor);
         var options = preferences.getAllValues();
         options.projectRoot = ProjectManager.getProjectRoot().fullPath;
-        options.fileName = preferences.get("mainFile") ? options.projectRoot + "/" + preferences.get("mainFile") :
+        options.fileName = preferences.get("mainFile") ? options.projectRoot + preferences.get("mainFile") :
                 editor.document.file.fullPath;
-        if (texRoot) {
-            options.texRoot = texRoot;
-        }
+        //set bibfile name if the main file contains a \bibliography entry
+        getMainFileDocument(options.fileName)
+            .then(function (doc) {
+                options.bibFileName = LatexDocumentParser.getBibFileName(doc.getText());
+            }, function (err) {
+                console.log(err);
+            }).then(function () {
+                if (texRoot) {
+                    options.texRoot = texRoot;
+                }
 
-        if (options.texBinDirectory.trim() === "") { //ensure the tex bin directory is set
-            showSettingsDialog();
-            ConsolePanel.clear().appendMessage(Strings.TEX_BIN_DIR_ERROR);
-        } else if (options.compiler === "bibtex") {
-            bibtex(options);
-        } else {
-            var compileMessage = options.compiler + ": " + Strings.COMPILING + " " + options.fileName +  "\n";
-            ConsolePanel.clear()
-                .appendMessage(compileMessage);
+                if (options.texBinDirectory.trim() === "") { //ensure the tex bin directory is set
+                    showSettingsDialog();
+                    ConsolePanel.clear().appendMessage(Strings.TEX_BIN_DIR_ERROR);
+                } else if (options.compiler === "bibtex") {
+                    bibtex(options);
+                    return;
+                } else {
+                    var compileMessage = options.compiler + ": " + Strings.COMPILING + " " + options.fileName +  "\n";
+                    ConsolePanel.clear()
+                        .appendMessage(compileMessage);
 
-            latexDomain.exec("compile", options)
-                .done(function (res) {
-                    latexIcon.addClass("on").removeClass("error");
-                    console.log(res);
-                    ConsolePanel.appendMessage(res.stdout.toString());
-                }).fail(function (err) {
-                    latexIcon.addClass("error").removeClass("on");
-                    console.log(err);
-                    ConsolePanel.appendMessage("\n")
-                        .appendMessage(err.stdout.toString());
-                });
-        }
+                    latexDomain.exec("compile", options)
+                        .done(function (res) {
+                            latexIcon.addClass("on").removeClass("error");
+                            console.log(res);
+                            ConsolePanel.appendMessage(res.stdout.toString());
+                        }).fail(function (err) {
+                            latexIcon.addClass("error").removeClass("on");
+                            console.log(err);
+                            ConsolePanel.appendMessage("\n")
+                                .appendMessage(err.stdout.toString());
+                        });
+                }
+            });
+
     }
 
     function activeFileIsTexRelated() {
@@ -146,6 +161,8 @@ define(function (require, exports, module) {
     }
 
     function init() {
+        ConsolePanel.initialise();
+
         latexIcon = $("<a id='latex-toolbar-icon' href='#'></a>").appendTo($("#main-toolbar .buttons")).addClass("disabled");
 
         latexIcon.on("click", function () {
@@ -163,7 +180,7 @@ define(function (require, exports, module) {
         });
 
         CodeMirror.registerHelper("fold", "stex", latexFold);
-        $(EditorManager).on("activeEditorChange", function (event, current, previous) {
+        EditorManager.on("activeEditorChange", function (event, current, previous) {
             if (previous) {
                 consoleStatus[previous.document.file.fullPath] = ConsolePanel.isVisible();
             }
@@ -201,7 +218,7 @@ define(function (require, exports, module) {
     exports.showSettings = showSettingsDialog;
 
     // Add a document change handler
-    $(DocumentManager).on("currentDocumentChange", _currentDocChangedHandler);
+    DocumentManager.on("currentDocumentChange", _currentDocChangedHandler);
 
     AppInit.appReady(function () {
         init();

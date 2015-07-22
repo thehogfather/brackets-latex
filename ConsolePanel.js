@@ -7,7 +7,7 @@
 /*global define, $, brackets, Mustache*/
 define(function (require, exports, module) {
     "use strict";
-    var PanelManager                    = brackets.getModule("view/PanelManager"),
+    var WorkspaceManager                = brackets.getModule("view/WorkspaceManager"),
         panelTemplate                   = require("text!htmlTemplates/latex-console.html"),
         ProjectManager                  = brackets.getModule("project/ProjectManager"),
         Strings                         = require("i18n!nls/strings"),
@@ -50,37 +50,45 @@ define(function (require, exports, module) {
         $("#main-file").val(preferences.get("mainFile"));
     }
 
-    function showConsolePanel() {
-        if (!consolePanel) {
-            var projectRoot = ProjectManager.getProjectRoot().fullPath;
-            ProjectManager.getAllFiles().then(function (res) {
-                var files = res.map(function (d) {
-                    return d.fullPath.substring(projectRoot.length);
-                }).filter(function (f) {
-                    return FileUtils.getFileExtension(f) === "tex";
-                });
-                var panelHtml = Mustache.render(panelTemplate, {strings: Strings, files: files});
-                consolePanel = PanelManager.createBottomPanel("latex-console", $(panelHtml), 100);
-
-                consolePanel.$panel
-                    .on("click", ".close", hideConsolePanel)
-                    .on("click", "button.compile", compile)
-                    .on("click", "button.bibtex", bibtex)
-                    .on("click", "button.tex-settings", showSettings)
-                    .on("click", "button.clear-console", clearConsole)
-                    .on("change", "select#settings-compiler", compilerChanged)
-                    .on("change", "select#main-file", mainFileChanged);
-            }, function (err) {
-                console.log(err);
-            });
+    function initialise() {
+         if (consolePanel) {
+            consolePanel.$panel.remove();
         }
+        var projectRoot = ProjectManager.getProjectRoot().fullPath;
+        ProjectManager.getAllFiles().then(function (res) {
+            var files = res.map(function (d) {
+                return d.fullPath.substring(projectRoot.length);
+            }).filter(function (f) {
+                return FileUtils.getFileExtension(f) === "tex";
+            });
+            var panelHtml = Mustache.render(panelTemplate, {strings: Strings, files: files});
+            consolePanel = WorkspaceManager.createBottomPanel("latex-console", $(panelHtml), 100);
+
+            consolePanel.$panel
+                .on("click", ".close", hideConsolePanel)
+                .on("click", "button.compile", compile)
+                .on("click", "button.bibtex", bibtex)
+                .on("click", "button.tex-settings", showSettings)
+                .on("click", "button.clear-console", clearConsole)
+                .on("change", "select#settings-compiler", compilerChanged)
+                .on("change", "select#main-file", mainFileChanged);
+        }, function (err) {
+            console.log(err);
+        });
         updateCompiler();
         updateMainFile();
+    }
+
+    function showConsolePanel() {
         consolePanel.setVisible(true);
+        updateCompiler();
+        updateMainFile();
     }
 
     function appendMessage(msg) {
-        showConsolePanel();
+        if (!consolePanel) {
+            showConsolePanel();
+        }
         $("pre#console", consolePanel.$panel).append("\n" + msg);
         var scrollHeight = $("pre#console", consolePanel.$panel).prop("scrollHeight");
         $(".table-container", consolePanel.$panel).scrollTop(scrollHeight);
@@ -97,9 +105,15 @@ define(function (require, exports, module) {
     //register change handler for preferences so that the compiler value is updated on the console panel if the preference is changed
     preferences.prefsObject.on("change", function (e, data) {
         updateCompiler();
+        updateMainFile();
     });
 
     //exported apis
+    exports.initialise = function () {
+        initialise();
+        return this;
+    };
+
     exports.show = function () {
         showConsolePanel();
         return this;
