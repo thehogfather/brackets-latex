@@ -75,7 +75,48 @@
         };
     }
 
+    /**
+     * Compiles file using arara - assumes that arara is installed on the system and can be found
+     * in the texbin directory
+     * @param {Object}   options object containing compile information passed from client. Includes
+     *                           fileName, texRoot, compiler, projectRoot
+     * @param {function} cb      A function to invoke when the compilation succeeds or fails
+     */
+    function arara(options, cb) {
+        //if an output directory is set then ensure it is created before continuing
+        var folderName = path.dirname(options.fileName);
+        log(process.env.PATH);
+        process.env.PATH = process.env.PATH.concat(":").concat(options.texBinDirectory);
+        log(process.env.PATH);
+        //resolve the texRoot relative to the folder containing the active file
+        if (options.texRoot) {
+            options.texRoot = path.resolve(folderName, options.texRoot);
+            log("TeXRoot found at " + options.texRoot, options.compiler);
+        }
+        var cdIntoDir = "cd " + quote(folderName);
+
+        var projectFolder = path.normalize(options.projectRoot),
+            fileName = options.texRoot ? path.relative(projectFolder, options.texRoot)
+                : path.relative(projectFolder, options.fileName),
+            prog = options.compiler;// path.join(options.texBinDirectory, options.compiler);
+        var fileBaseName = path.basename(fileName, path.extname(fileName));
+        var command = quote(prog) + " " + quote(fileBaseName);
+
+        var changeDirectory = execCommand(cdIntoDir);
+        var runArara = execCommand(command, {env: process.env, cwd: folderName});
+        changeDirectory()
+            .then(runArara)
+            .then(function  (res) {
+                cb(res);
+            }).catch(function (err) {
+                cb(err);
+            });
+    }
+
     function compileFile(options, cb) {
+        if (options.compiler === "arara") {
+            return arara(options, cb);
+        }
         //if an output directory is set then ensure it is created before continuing
         options.outputDirectory = options.outputDirectory || "";
         var folderName = path.dirname(options.fileName);

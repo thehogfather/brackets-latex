@@ -123,7 +123,9 @@ define(function (require, exports, module) {
                             latexIcon.addClass("error").removeClass("on");
                             console.log(err);
                             ConsolePanel.appendMessage("\n")
-                                .appendMessage(err.stdout.toString());
+                                .appendMessage(err.stdout.toString())
+                                .appendMessage(err.stderr.toString())
+                                .appendMessage(err.err ? JSON.stringify(err.err, null, " ") : "");
                         });
                 }
             });
