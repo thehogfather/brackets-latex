@@ -9,6 +9,7 @@ define(function (require, exports, module) {
     "use strict";
 
     var PreferenceManager        = brackets.getModule("preferences/PreferencesManager"),
+        ProjectManager           = brackets.getModule("project/ProjectManager"),
         prefs                    = PreferenceManager.getExtensionPrefs("brackets-latex");
     //define default preference values
     prefs.definePreference("texBinDirectory", "string", brackets.platform === "win" ? "" : "/usr/texbin");
@@ -17,7 +18,8 @@ define(function (require, exports, module) {
     prefs.definePreference("compiler", "string", "pdflatex");
     prefs.definePreference("platform", "string", brackets.platform);
     prefs.definePreference("mainFile", "string", "");
-
+    PreferenceManager.stateManager.definePreference("consoleVisibilityMap", "object", {});
+    
     function get(key) {
         return prefs.get(key, PreferenceManager.CURRENT_PROJECT);
     }
@@ -34,10 +36,34 @@ define(function (require, exports, module) {
         prefs.set(key, value, { location: { scope: "project"}});
     }
 
+    function getViewStateContext() {
+        var projectRoot = ProjectManager.getProjectRoot();
+        return {
+            location: {
+                scope: "user",
+                layer: "project",
+                layerID: projectRoot && projectRoot.fullPath
+            }
+        };
+    }
+    
+    function getConsoleVisibilityMap() {
+        var context = getViewStateContext();
+        return PreferenceManager.getViewState("consoleVisible", context);
+        
+    }
+    
+    function setConsoleVisibilityMap(map) {
+        var context = getViewStateContext();
+        PreferenceManager.setViewState("consoleVisible", map, context);
+    }
+    
     module.exports = {
         getAllValues: getAllValues,
         get: get,
         set: set,
-        prefsObject: prefs
+        prefsObject: prefs,
+        getConsoleVisibilityMap: getConsoleVisibilityMap,
+        setConsoleVisibilityMap: setConsoleVisibilityMap
     };
 });

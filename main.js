@@ -35,7 +35,6 @@ define(function (require, exports, module) {
         COMPILE = "compile",
         LATEX_SETTINGS = "brackets-latex.settings",
         texRelateFiledExtensions = ["sty", "tex", "bib", "cls", "bbl"],
-        consoleStatus = {},
         Strings = require("i18n!nls/strings"),
         TEX_ROOT = "%!TEX root=";
 
@@ -183,13 +182,11 @@ define(function (require, exports, module) {
 
         CodeMirror.registerHelper("fold", "stex", latexFold);
         EditorManager.on("activeEditorChange", function (event, current, previous) {
-            if (previous) {
-                consoleStatus[previous.document.file.fullPath] = ConsolePanel.isVisible();
-            }
+            var consoleVisibilityMap = preferences.getConsoleVisibilityMap() || {};
             if (current) {
                 if (activeFileIsTexRelated()) {
                     latexIcon.addClass("on").removeClass("disabled");
-                    if (consoleStatus[current.document.file.fullPath] === false) {
+                    if (consoleVisibilityMap[current.document.file.fullPath] === false) {
                         ConsolePanel.hide();
                     } else {
                         ConsolePanel.show();

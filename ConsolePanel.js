@@ -10,12 +10,24 @@ define(function (require, exports, module) {
     var WorkspaceManager                = brackets.getModule("view/WorkspaceManager"),
         panelTemplate                   = require("text!htmlTemplates/latex-console.html"),
         ProjectManager                  = brackets.getModule("project/ProjectManager"),
+        EditorManager                   = brackets.getModule("editor/EditorManager"),
         Strings                         = require("i18n!nls/strings"),
         Main                            = require("main"),
         FileUtils                       = brackets.getModule("file/FileUtils"),
         preferences                     = require("Preferences");
     var consolePanel;
 
+    function saveConsoleVisibilityState(visible) {
+        var editor = EditorManager.getActiveEditor() || EditorManager.getCurrentFullEditor(),
+            path;
+        if (editor) {
+            path = editor.document.file.fullPath;
+            var state = preferences.getConsoleVisibilityMap() || {};
+            state[path] = visible;
+            preferences.setConsoleVisibilityMap(state);
+        }
+    }
+    
     function clearConsole() {
         $("pre#console", consolePanel.$panel).html("");
     }
@@ -31,7 +43,10 @@ define(function (require, exports, module) {
     function showSettings() { Main.showSettings(); }
 
     function hideConsolePanel() {
-        if (consolePanel) { consolePanel.setVisible(false); }
+        if (consolePanel) { 
+            consolePanel.setVisible(false);
+            saveConsoleVisibilityState(false);
+        }
     }
 
     function compilerChanged() {
@@ -83,6 +98,7 @@ define(function (require, exports, module) {
         consolePanel.setVisible(true);
         updateCompiler();
         updateMainFile();
+        saveConsoleVisibilityState(true);
     }
 
     function appendMessage(msg) {
