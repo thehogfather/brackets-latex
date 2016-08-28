@@ -4,11 +4,10 @@
  * @date 11/30/13 23:00:20 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, node: true */
-/*global*/
 (function () {
     "use strict";
-    var Promise = require("es6-promise").Promise;
     var cp = require("child_process"),
+        Promise = require("es6-promise").Promise,
         exec = cp.exec,
         fs = require("fs"),
         path = require("path");

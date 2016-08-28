@@ -1,6 +1,6 @@
 {
   "name": "bracket-latex-node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node module for calling tex programs to compile files in brackets",
   "main": "CompileLatex.js",
   "scripts": {
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/thehogfather/brackets-latex#readme",
   "dependencies": {
-    "es6-promise": "^2.3.0"
+    "es6-promise": "2.3.0"
   }
 }
