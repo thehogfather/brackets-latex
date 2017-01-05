@@ -4,7 +4,7 @@
  * @date 12/2/13 8:47:22 AM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define,$, brackets, Mustache */
+/*global define,$, brackets*/
 define(function (require, exports, module) {
     "use strict";
     var Dialogs         = brackets.getModule("widgets/Dialogs"),
@@ -13,6 +13,7 @@ define(function (require, exports, module) {
         FileUtils       = brackets.getModule("file/FileUtils"),
         Strings         = require("i18n!nls/strings"),
         settingsDialogTemplate = require("text!htmlTemplates/settings-dialog.html"),
+        Mustache        = brackets.getModule("thirdparty/mustache/mustache"),
         preferences     = require("Preferences");
 
     function setFormValues(prefs) {

@@ -4,7 +4,7 @@
  * @date 11/29/13 9:20:10 AM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets,  PathUtils */
+/*global define, $, brackets*/
 define(function (require, exports, module) {
     "use strict";
     var EditorManager       = brackets.getModule("editor/EditorManager"),
@@ -27,6 +27,8 @@ define(function (require, exports, module) {
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
         latexFold           = require("foldhelpers/latex-fold"),
         preferences         = require("Preferences"),
+        PathUtils           = brackets.getModule("thirdparty/path-utils/path-utils"),
+        MainViewManager     = brackets.getModule("view/MainViewManager"),
         CodeMirror          = brackets.getModule("thirdparty/CodeMirror2/lib/codemirror");
 
      var latexDomain,
@@ -139,10 +141,9 @@ define(function (require, exports, module) {
         }
     }
 
-    function _currentDocChangedHandler() {
+    function _currentDocChangedHandler(event, file) {
         // get programming language
-        var doc = DocumentManager.getCurrentDocument(),
-            ext = doc ? PathUtils.filenameExtension(doc.file.fullPath).toLowerCase().substr(1) : ""; // delete the dot
+        var ext = file ? PathUtils.filenameExtension(file.fullPath).toLowerCase().substr(1) : ""; // delete the dot
 
         // Only show Tex and the right bar, if it's a tex related file
         if (texRelateFiledExtensions.indexOf(ext) !== -1) {
@@ -217,7 +218,7 @@ define(function (require, exports, module) {
     exports.showSettings = showSettingsDialog;
 
     // Add a document change handler
-    DocumentManager.on("currentDocumentChange", _currentDocChangedHandler);
+    MainViewManager.on("currentFileChange", _currentDocChangedHandler);
 
     AppInit.appReady(function () {
         init();

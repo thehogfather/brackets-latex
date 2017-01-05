@@ -4,7 +4,7 @@
  * @date 12/2/13 21:44:03 PM
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets, Mustache*/
+/*global define, $, brackets*/
 define(function (require, exports, module) {
     "use strict";
     var WorkspaceManager                = brackets.getModule("view/WorkspaceManager"),
@@ -14,6 +14,7 @@ define(function (require, exports, module) {
         Strings                         = require("i18n!nls/strings"),
         Main                            = require("main"),
         FileUtils                       = brackets.getModule("file/FileUtils"),
+        Mustache                        = brackets.getModule("thirdparty/mustache/mustache"),
         preferences                     = require("Preferences");
     var consolePanel;
 
