@@ -174,7 +174,7 @@ define(function (require, exports, module) {
             }
         });
 
-        LanguageManager.defineLanguage("LaTeX", {
+        LanguageManager.defineLanguage("Latex", {
             name: "LaTeX",
             mode: ["stex", "text/x-stex"],
             fileExtensions: ["tex", "bib", "cls", "ltx", "clo", "sty", "def"],
